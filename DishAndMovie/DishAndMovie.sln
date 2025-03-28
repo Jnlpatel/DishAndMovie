@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35303.130
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DishAndMovie", "DishAndMovie\DishAndMovie.csproj", "{0AC9BD28-3A84-4674-8597-E7E972F57E4F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0AC9BD28-3A84-4674-8597-E7E972F57E4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AC9BD28-3A84-4674-8597-E7E972F57E4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AC9BD28-3A84-4674-8597-E7E972F57E4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AC9BD28-3A84-4674-8597-E7E972F57E4F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0131B994-E561-4319-A2FA-CF1C6339D5D0}
+	EndGlobalSection
+EndGlobal
