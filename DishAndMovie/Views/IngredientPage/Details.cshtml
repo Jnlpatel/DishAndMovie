@@ -1,0 +1,93 @@
+﻿@model DishAndMovie.Models.IngredientDto
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ingredient Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .details {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .details p {
+            margin: 10px 0;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #2980b9;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #1c6391;
+            color: white;
+        }
+
+        .button.delete {
+            background-color: #e74c3c;
+        }
+
+        .button.delete:hover {
+            background-color: #c0392b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Ingredient Details</h1>
+
+        <div class="details">
+            <p><strong>Ingredient ID:</strong> @Model.IngredientId</p>
+            <p><strong>Name:</strong> @Model.Name</p>
+            <p><strong>Unit:</strong> @Model.Unit</p>
+            <p><strong>Calories per Unit:</strong> @Model.CaloriesPerUnit</p>
+        </div>
+
+        <div class="button-container">
+            <a class="button" href="/IngredientPage/Edit/@Model.IngredientId">Edit</a>
+            <a class="button delete" href="/IngredientPage/ConfirmDelete/@Model.IngredientId">Delete</a>
+            <a class="button" href="/IngredientPage/List">Back to List</a>
+        </div>
+    </div>
+
+</body>
+</html>

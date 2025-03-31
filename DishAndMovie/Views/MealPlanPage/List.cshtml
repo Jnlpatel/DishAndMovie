@@ -1,0 +1,132 @@
+﻿@model IEnumerable<DishAndMovie.Models.MealPlanDto>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Meal Plans</title>
+    <style>
+        /* Styles for the meal plan list */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex-grow: 1; 
+            max-width: auto; 
+            margin: 0 auto; 
+            padding: 20px; 
+            overflow: auto; 
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .navigation a {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .navigation a:hover {
+            background-color: #1c6391;
+        }
+
+        .meal-plan-table {
+            width: 100%;
+            margin: 20px auto;
+        }
+
+        .meal-plan-table th, .meal-plan-table td {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            text-align: left;
+        }
+
+        .meal-plan-table th {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #1c6391;
+            color: white;
+        }
+
+        .button.delete {
+            background-color: #e74c3c;
+        }
+
+        .button.delete:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>List of Meal Plans</h1>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="/MealPlanPage/New">Add New Meal Plan</a>
+        </div>
+
+        <table class="meal-plan-table">
+            <thead>
+                <tr>
+                    <th>Meal Plan ID</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var mealPlan in Model)
+                {
+                    <tr>
+                        <td>@mealPlan.MealPlanId</td>
+                        <td>@mealPlan.Name</td>
+                        <td>@mealPlan.Date.ToShortDateString()</td>
+                        <td>
+                            <a class="button" href="/MealPlanPage/Details/@mealPlan.MealPlanId">Details</a>
+                            <a class="button" href="/MealPlanPage/Edit/@mealPlan.MealPlanId">Edit</a>
+                            <a class="button delete" href="/MealPlanPage/ConfirmDelete/@mealPlan.MealPlanId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+</body>
+</html>

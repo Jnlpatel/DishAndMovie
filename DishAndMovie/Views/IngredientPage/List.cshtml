@@ -1,0 +1,133 @@
+﻿@model IEnumerable<DishAndMovie.Models.IngredientDto>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Ingredients</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex-grow: 1;
+            max-width: auto;
+            margin: 0 auto;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .navigation a {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .navigation a:hover {
+            background-color: #1c6391;
+        }
+
+        .ingredient-table {
+            width: 100%;
+            margin: 20px auto;
+        }
+
+        .ingredient-table th, .ingredient-table td {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            text-align: left;
+        }
+
+        .ingredient-table th {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #1c6391;
+            color: white;
+        }
+
+        .button.delete {
+            background-color: #e74c3c;
+        }
+
+        .button.delete:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>List of Ingredients</h1>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="/IngredientPage/New">Add New Ingredient</a>
+        </div>
+
+        <table class="ingredient-table">
+            <thead>
+                <tr>
+                    <th>Ingredient ID</th>
+                    <th>Name</th>
+                    <th>Unit</th>
+                    <th>Calories per Unit</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ingredient in Model)
+                {
+                    <tr>
+                        <td>@ingredient.IngredientId</td>
+                        <td>@ingredient.Name</td>
+                        <td>@ingredient.Unit</td>
+                        <td>@ingredient.CaloriesPerUnit</td>
+                        <td>
+                            <a class="button" href="/IngredientPage/Details/@ingredient.IngredientId">Details</a>
+                            <a class="button" href="/IngredientPage/Edit/@ingredient.IngredientId">Edit</a>
+                            <a class="button delete" href="/IngredientPage/ConfirmDelete/@ingredient.IngredientId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
