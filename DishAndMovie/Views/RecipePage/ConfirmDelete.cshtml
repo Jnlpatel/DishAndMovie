@@ -1,0 +1,87 @@
+﻿@model DishAndMovie.Models.RecipeDto
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Delete Recipe</title>
+    <style>
+        /* Styles for the delete confirmation page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex-grow: 1;
+            max-width: auto;
+            margin: 0 auto;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        h1 {
+            color: #c0392b;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .button:hover {
+                background-color: #c0392b;
+                color: white;
+            }
+
+        .cancel {
+            background-color: #2980b9;
+        }
+
+            .cancel:hover {
+                background-color: #1c6391;
+                color: white;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Confirm Deletion</h1>
+
+        <div class="form-container">
+            <p>Are you sure you want to delete the ingredient <strong>@Model.Name</strong>?</p>
+            <form asp-action="Delete" asp-route-id="@Model.RecipeId" method="post">
+                <div class="form-group">
+                    <input type="submit" value="Delete" class="button" />
+                    <a class="button cancel" href="/RecipePage/List">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
+
+

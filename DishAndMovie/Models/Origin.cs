@@ -10,4 +10,10 @@ namespace DishAndMovie.Models
         public string OriginCountry { get; set; }
 
     }
+    public class OriginDto
+    {
+        public int OriginId { get; set; }
+        public string OriginCountry { get; set; }
+    }
+
 }

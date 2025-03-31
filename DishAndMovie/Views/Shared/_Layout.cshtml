@@ -6,7 +6,28 @@
     <title>@ViewData["Title"] - DishAndMovie</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/DishAndMovie.styles.css" asp-append-version="true" />
+    <style>
+        html, body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-container {
+            flex-grow: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            border-top: 1px solid #ddd;
+            background-color: #f8f9fa;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -25,6 +46,24 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Swagger" asp-action="Index">API</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="OriginPage" asp-action="List">Origin</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="MealPlanPage" asp-action="List">MealPlan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="RecipePage" asp-action="List">Recipe</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="IngredientPage" asp-action="List">Ingredient</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="MoviePage" asp-action="List">Movie</a>
+                        </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -37,11 +76,12 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
+    <footer class="border-top">
+        <div class="footer-container">
             &copy; 2025 - DishAndMovie - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

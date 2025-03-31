@@ -11,4 +11,11 @@ namespace DishAndMovie.Models
 
         public DateTime Date { get; set; }
     }
+
+    public class MealPlanDto
+    {
+        public int MealPlanId { get; set; }
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
+    }
 }

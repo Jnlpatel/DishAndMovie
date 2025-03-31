@@ -17,4 +17,13 @@ namespace DishAndMovie.Models
         public ICollection<RecipexIngredient> RecipesXIngredients { get; set; }
 
     }
+
+    public class IngredientDto
+    {
+        public int IngredientId { get; set; }
+        public string Name { get; set; }
+        public string Unit { get; set; }
+        public int CaloriesPerUnit { get; set; }
+    }
+
 }

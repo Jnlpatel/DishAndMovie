@@ -1,0 +1,130 @@
+﻿@model DishAndMovie.Models.IngredientDto
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Ingredient</title>
+    <style>
+        /* Styles for the ingredient edit form */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex-grow: 1;
+            max-width: auto;
+            margin: 0 auto;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .button.update {
+            background-color: #2980b9;
+        }
+
+        .button.update:hover {
+            background-color: #1c6391;
+            color: white;
+        }
+
+        .button.cancel {
+            background-color: #e74c3c;
+        }
+
+        .button.cancel:hover {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Edit Ingredient</h1>
+
+        <div class="form-container">
+            <form asp-action="Update" asp-route-id="@Model.IngredientId">
+                <input type="hidden" asp-for="IngredientId" />
+
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" required />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Unit"></label>
+                    <input asp-for="Unit" required />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CaloriesPerUnit"></label>
+                    <input asp-for="CaloriesPerUnit" required />
+                </div>
+
+                <div class="navigation">
+                    <button type="submit" class="button update">Update</button>
+                    <a class="button cancel" href="/IngredientPage/List">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

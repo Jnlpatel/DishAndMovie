@@ -1,8 +1,20 @@
 using DishAndMovie.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using DishAndMovie.Interfaces;
+using DishAndMovie.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Swagger API help pages
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Associate service interfaces with their implementations
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<IMealPlanService, MealPlanService>();
+builder.Services.AddScoped<IOriginService, OriginService>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -19,6 +31,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();  // Enable Swagger
+    app.UseSwaggerUI(); // Enable Swagger UI to visualize and interact with the API
     app.UseMigrationsEndPoint();
 }
 else
