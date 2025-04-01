@@ -4,6 +4,7 @@ using DishAndMovie.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DishAndMovie.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250401184444_movie-genre")]
+    partial class moviegenre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,8 +118,6 @@ namespace DishAndMovie.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("MovieID");
-
-                    b.HasIndex("OriginId");
 
                     b.ToTable("Movies");
                 });
@@ -460,17 +461,6 @@ namespace DishAndMovie.Data.Migrations
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
-            modelBuilder.Entity("DishAndMovie.Models.Movie", b =>
-                {
-                    b.HasOne("DishAndMovie.Models.Origin", "Origin")
-                        .WithMany("Movies")
-                        .HasForeignKey("OriginId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Origin");
-                });
-
             modelBuilder.Entity("DishAndMovie.Models.MovieGenre", b =>
                 {
                     b.HasOne("DishAndMovie.Models.Genre", "Genre")
@@ -601,11 +591,6 @@ namespace DishAndMovie.Data.Migrations
                     b.Navigation("MovieGenres");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("DishAndMovie.Models.Origin", b =>
-                {
-                    b.Navigation("Movies");
                 });
 
             modelBuilder.Entity("DishAndMovie.Models.Recipe", b =>

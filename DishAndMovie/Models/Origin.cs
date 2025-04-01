@@ -9,6 +9,9 @@ namespace DishAndMovie.Models
 
         public string OriginCountry { get; set; }
 
+        // One-to-Many relationships
+        public ICollection<Movie> Movies { get; set; } = new List<Movie>();
+
     }
     public class OriginDto
     {
