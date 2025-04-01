@@ -54,6 +54,12 @@ namespace DishAndMovie.Data
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(r => r.UserID)
                 .HasPrincipalKey(u => u.Id);
+
+            // Define the one-to-many relationship explicitly
+            modelBuilder.Entity<Movie>()
+                .HasOne(m => m.Origin)
+                .WithMany(o => o.Movies)
+                .HasForeignKey(m => m.OriginId);
         }
     }
 }

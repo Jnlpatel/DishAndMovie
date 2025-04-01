@@ -26,6 +26,8 @@ namespace DishAndMovie.Models
 
         [ForeignKey("Origins")]
         public int OriginId { get; set; }
+        public Origin? Origin { get; set; }
+
 
         // Navigation properties:
         // One-to-many relationship with Reviews
