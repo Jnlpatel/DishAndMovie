@@ -4,6 +4,7 @@ using DishAndMovie.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DishAndMovie.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250401183244_movie-table")]
+    partial class movietable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,24 +24,6 @@ namespace DishAndMovie.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DishAndMovie.Models.Genre", b =>
-                {
-                    b.Property<int>("GenreID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GenreID"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("GenreID");
-
-                    b.ToTable("Genres");
-                });
 
             modelBuilder.Entity("DishAndMovie.Models.Ingredient", b =>
                 {
@@ -119,21 +104,6 @@ namespace DishAndMovie.Data.Migrations
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("DishAndMovie.Models.MovieGenre", b =>
-                {
-                    b.Property<int>("MovieID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GenreID")
-                        .HasColumnType("int");
-
-                    b.HasKey("MovieID", "GenreID");
-
-                    b.HasIndex("GenreID");
-
-                    b.ToTable("MovieGenres");
-                });
-
             modelBuilder.Entity("DishAndMovie.Models.Origin", b =>
                 {
                     b.Property<int>("OriginId")
@@ -203,40 +173,6 @@ namespace DishAndMovie.Data.Migrations
                     b.ToTable("RecipesXIngredients");
                 });
 
-            modelBuilder.Entity("DishAndMovie.Models.Review", b =>
-                {
-                    b.Property<int>("ReviewID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
-
-                    b.Property<int>("MovieID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReviewText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ReviewID");
-
-                    b.HasIndex("MovieID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Reviews");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -301,11 +237,6 @@ namespace DishAndMovie.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -357,10 +288,6 @@ namespace DishAndMovie.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -448,35 +375,6 @@ namespace DishAndMovie.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DishAndMovie.Models.ApplicationUser", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasDiscriminator().HasValue("ApplicationUser");
-                });
-
-            modelBuilder.Entity("DishAndMovie.Models.MovieGenre", b =>
-                {
-                    b.HasOne("DishAndMovie.Models.Genre", "Genre")
-                        .WithMany("MovieGenres")
-                        .HasForeignKey("GenreID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DishAndMovie.Models.Movie", "Movie")
-                        .WithMany("MovieGenres")
-                        .HasForeignKey("MovieID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Genre");
-
-                    b.Navigation("Movie");
-                });
-
             modelBuilder.Entity("DishAndMovie.Models.Recipe", b =>
                 {
                     b.HasOne("DishAndMovie.Models.Origin", "Origin")
@@ -501,25 +399,6 @@ namespace DishAndMovie.Data.Migrations
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DishAndMovie.Models.Review", b =>
-                {
-                    b.HasOne("DishAndMovie.Models.Movie", "Movie")
-                        .WithMany("Reviews")
-                        .HasForeignKey("MovieID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DishAndMovie.Models.ApplicationUser", "User")
-                        .WithMany("Reviews")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -573,31 +452,14 @@ namespace DishAndMovie.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DishAndMovie.Models.Genre", b =>
-                {
-                    b.Navigation("MovieGenres");
-                });
-
             modelBuilder.Entity("DishAndMovie.Models.Ingredient", b =>
                 {
                     b.Navigation("RecipesXIngredients");
                 });
 
-            modelBuilder.Entity("DishAndMovie.Models.Movie", b =>
-                {
-                    b.Navigation("MovieGenres");
-
-                    b.Navigation("Reviews");
-                });
-
             modelBuilder.Entity("DishAndMovie.Models.Recipe", b =>
                 {
                     b.Navigation("RecipesXIngredients");
-                });
-
-            modelBuilder.Entity("DishAndMovie.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }
