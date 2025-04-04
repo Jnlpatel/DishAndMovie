@@ -107,9 +107,8 @@
             <thead>
                 <tr>
                     <th>Title</th>
-                    <th>Director</th>
                     <th>Release Date</th>
-                    <th>Origin Country</th>
+                    <th>Director</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -118,9 +117,8 @@
                 {
                     <tr>
                         <td>@movie.Title</td>
-                        <td>@movie.Director</td>
                         <td>@movie.ReleaseDate.ToString("yyyy-MM-dd")</td>
-                        <td>@movie.OriginCountry</td>
+                        <td>@movie.Director</td>
                         <td>
                             <a class="button" href="@Url.Action("Details", "MoviesPage", new { id = movie.MovieID })">Details</a>
                             <a class="button" href="@Url.Action("Edit", "MoviesPage", new { id = movie.MovieID })">Edit</a>

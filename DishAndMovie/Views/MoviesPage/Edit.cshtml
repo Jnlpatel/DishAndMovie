@@ -1,0 +1,236 @@
+﻿@model DishAndMovie.Models.MovieDto
+
+@{
+    ViewData["Title"] = "Edit Movie";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - @Model.Title</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .form-container {
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .genre-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-check-input {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .form-check-label {
+            margin-bottom: 0;
+        }
+
+        .button {
+            padding: 12px 20px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .update {
+            background-color: #2ecc71;
+        }
+
+        .update:hover {
+            background-color: #27ae60;
+        }
+
+        .cancel {
+            background-color: #e74c3c;
+        }
+
+        .cancel:hover {
+            background-color: #c0392b;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .text-danger {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>@ViewData["Title"]</h1>
+
+        <div class="form-container">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="MovieID" />
+
+                <div class="form-group">
+                    <label asp-for="Title"></label>
+                    <input asp-for="Title" placeholder="Enter movie title" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" placeholder="Enter movie description"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Director"></label>
+                    <input asp-for="Director" placeholder="Enter director's name" />
+                    <span asp-validation-for="Director" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ReleaseDate"></label>
+                    <input asp-for="ReleaseDate" type="date" />
+                    <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PosterURL"></label>
+                    <input asp-for="PosterURL" placeholder="Enter poster image URL" />
+                    <span asp-validation-for="PosterURL" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="OriginId">Origin Country</label>
+                    <select asp-for="OriginId">
+                        <option value="">-- Select Origin Country --</option>
+                        @if (ViewBag.Origins != null)
+                        {
+                            @foreach (var origin in ViewBag.Origins)
+                            {
+                                <option value="@origin.OriginId">@origin.OriginCountry</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="OriginId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Genres</label>
+                    @if (ViewBag.Genres != null)
+                    {
+                        <div class="genre-checkboxes">
+                            @foreach (var genre in ViewBag.Genres)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="GenreIds"
+                                           value="@genre.GenreID"
+                                           id="genre@(genre.GenreID)"
+                                           @(Model.GenreIds != null && Model.GenreIds.Contains(genre.GenreID) ? "checked" : "")>
+                                    <label class="form-check-label" for="genre@(genre.GenreID)">
+                                        @genre.Name
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <span asp-validation-for="GenreIds" class="text-danger"></span>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="button update">Update Movie</button>
+                    <a asp-action="Index" asp-route-id="@Model.MovieID" class="button cancel">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>
