@@ -16,4 +16,9 @@ namespace DishAndMovie.Models
         // Many-to-many relationship with Movies (through MovieGenres)
         public ICollection<MovieGenre>? MovieGenres { get; set; }
     }
+    public class GenreDto
+    {
+        public int GenreID { get; set; }
+        public string Name { get; set; }
+    }
 }

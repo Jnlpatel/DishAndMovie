@@ -1,0 +1,72 @@
+﻿@model DishAndMovie.Models.GenreDto
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Genre Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .genre-details {
+            margin: 20px 0;
+        }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+            .button:hover {
+                background-color: #1c6391;
+            }
+
+        .navigation {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Genre Details</h1>
+
+        <div class="genre-details">
+            <p><strong>Genre ID:</strong> @Model.GenreID</p>
+            <p><strong>Genre Name:</strong> @Model.Name</p>
+        </div>
+
+        <div class="navigation">
+            <a href="/GenrePage/Edit/@Model.GenreID" class="button">Edit Genre</a>
+            <a href="/GenrePage/Index" class="button">Back to List</a>
+        </div>
+    </div>
+
+</body>
+</html>

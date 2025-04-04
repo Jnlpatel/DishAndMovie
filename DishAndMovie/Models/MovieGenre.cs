@@ -17,4 +17,9 @@ namespace DishAndMovie.Models
         [ForeignKey("GenreID")]
         public Genre? Genre { get; set; }
     }
+    public class MovieGenreDto
+    {
+        public int MovieID { get; set; }
+        public int GenreID { get; set; }
+    }
 }

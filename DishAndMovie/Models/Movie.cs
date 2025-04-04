@@ -36,4 +36,18 @@ namespace DishAndMovie.Models
         // Many-to-many relationship with Genres (through MovieGenres)
         public ICollection<MovieGenre>? MovieGenres { get; set; }
     }
+    public class MovieDto
+    {
+        public int MovieID { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public string PosterURL { get; set; }
+        public string Director { get; set; }
+        public int OriginId { get; set; }
+        public string OriginCountry { get; set; }  // From Origin entity
+        public List<int>? GenreIds { get; set; } // List of Genre IDs for many-to-many relation
+
+    }
+   
 }

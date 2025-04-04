@@ -33,4 +33,14 @@ namespace DishAndMovie.Models
         [Display(Name = "Review Date")]
         public DateTime ReviewDate { get; set; } = DateTime.Now; // Default value
     }
+    public class ReviewDto
+    {
+        public int ReviewID { get; set; }
+        public int MovieID { get; set; }
+        public string MovieTitle { get; set; }
+        public string UserID { get; set; }
+        public string ReviewText { get; set; }
+        public int Rating { get; set; }
+        public DateTime ReviewDate { get; set; }
+    }
 }
