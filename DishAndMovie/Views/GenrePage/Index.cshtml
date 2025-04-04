@@ -1,0 +1,129 @@
+﻿@model IEnumerable<DishAndMovie.Models.GenreDto>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Genres</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex-grow: 1;
+            max-width: auto;
+            margin: 0 auto;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+            .navigation a {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: #2980b9;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+
+                .navigation a:hover {
+                    background-color: #1c6391;
+                }
+
+        .genre-table {
+            width: 100%;
+            margin: 20px auto;
+        }
+
+            .genre-table th, .genre-table td {
+                padding: 12px 15px;
+                border: 2px solid #ddd;
+                text-align: left;
+            }
+
+            .genre-table th {
+                background-color: #34495e;
+                color: white;
+            }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+            .button:hover {
+                background-color: #1c6391;
+                color: white;
+            }
+
+            .button.delete {
+                background-color: #e74c3c;
+            }
+
+                .button.delete:hover {
+                    background-color: #c0392b;
+                }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>List of Genres</h1>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="/GenrePage/Create">Add New Genre</a>
+        </div>
+
+        <table class="genre-table">
+            <thead>
+                <tr>
+                    <th>Genre ID</th>
+                    <th>Genre Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var genre in Model)
+                {
+                    <tr>
+                        <td>@genre.GenreID</td>
+                        <td>@genre.Name</td>
+                        <td>
+                            <a class="button" asp-action="Edit" asp-route-id="@genre.GenreID">Edit</a> 
+                            <a class="button" asp-action="Details" asp-route-id="@genre.GenreID">Details</a> 
+                            <a class="button delete" asp-action="Delete" asp-route-id="@genre.GenreID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
