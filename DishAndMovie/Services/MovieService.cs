@@ -28,7 +28,7 @@ namespace DishAndMovie.Services
                     PosterURL = m.PosterURL,
                     Director = m.Director,
                     OriginId = m.OriginId,
-                    OriginCountry = m.Origin.OriginCountry
+
                 }).ToListAsync();
         }
 
@@ -53,8 +53,9 @@ namespace DishAndMovie.Services
                 PosterURL = movie.PosterURL,
                 Director = movie.Director,
                 OriginId = movie.OriginId,
-                OriginCountry = movie.Origin.OriginCountry,
-                GenreIds = movie.MovieGenres.Select(mg => mg.GenreID).ToList()
+                GenreIds = movie.MovieGenres.Select(mg => mg.GenreID).ToList(),
+                GenreNames = movie.MovieGenres?.Select(g => g.Genre.Name).ToList()
+
             };
         }
 
@@ -64,14 +65,22 @@ namespace DishAndMovie.Services
 
             try
             {
+                // Validate input
+                if (string.IsNullOrEmpty(movieDto.Title))
+                {
+                    response.Status = ServiceResponse.ServiceStatus.Error;
+                    response.Messages.Add("Movie title is required.");
+                    return response;
+                }
+
                 // Step 1: Create a new Movie from the MovieDto
                 var movie = new Movie
                 {
                     Title = movieDto.Title,
                     Description = movieDto.Description,
                     ReleaseDate = movieDto.ReleaseDate,
-                    PosterURL = movieDto.PosterURL,
-                    Director = movieDto.Director,
+                    PosterURL = movieDto.PosterURL ?? string.Empty, // Ensure not null
+                    Director = movieDto.Director ?? string.Empty,   // Ensure not null
                     OriginId = movieDto.OriginId
                 };
 
@@ -82,7 +91,13 @@ namespace DishAndMovie.Services
                 // Step 2: Add the MovieGenres entries to the database
                 if (movieDto.GenreIds != null && movieDto.GenreIds.Any())
                 {
-                    foreach (var genreId in movieDto.GenreIds)
+                    // Ensure each genre exists before adding the relationship
+                    var existingGenreIds = await _context.Genres
+                        .Where(g => movieDto.GenreIds.Contains(g.GenreID))
+                        .Select(g => g.GenreID)
+                        .ToListAsync();
+
+                    foreach (var genreId in existingGenreIds)
                     {
                         var movieGenre = new MovieGenre
                         {
@@ -98,6 +113,7 @@ namespace DishAndMovie.Services
                 // Step 3: Return a response indicating that the movie was created
                 response.Status = ServiceResponse.ServiceStatus.Created;
                 response.CreatedId = movie.MovieID;
+                response.Messages.Add("Movie created successfully.");
 
             }
             catch (Exception ex)
@@ -109,36 +125,63 @@ namespace DishAndMovie.Services
 
             return response;
         }
-    
 
-
-    public async Task<ServiceResponse> UpdateMovie(MovieDto movieDto)
+        public async Task<ServiceResponse> UpdateMovie(int id, MovieDto movieDto)
         {
-            var movie = await _context.Movies.FindAsync(movieDto.MovieID);
-            if (movie == null)
+            var response = new ServiceResponse();
+
+            try
             {
-                return new ServiceResponse
+                var movie = await _context.Movies
+                                          .Include(m => m.MovieGenres) // Include MovieGenres for updating genres
+                                          .FirstOrDefaultAsync(m => m.MovieID == id);
+
+                if (movie == null)
                 {
-                    Status = ServiceResponse.ServiceStatus.NotFound,
-                    Messages = new List<string> { "Movie not found." }
-                };
+                    response.Status = ServiceResponse.ServiceStatus.NotFound;
+                    response.Messages.Add("Movie not found.");
+                    return response;
+                }
+
+                // Update movie properties
+                movie.Title = movieDto.Title;
+                movie.Description = movieDto.Description;
+                movie.ReleaseDate = movieDto.ReleaseDate;
+                movie.PosterURL = movieDto.PosterURL;
+                movie.Director = movieDto.Director;
+                movie.OriginId = movieDto.OriginId;
+
+                // Update movie genres
+                if (movieDto.GenreIds != null)
+                {
+                    // Remove existing genres from MovieGenre table
+                    _context.MovieGenres.RemoveRange(movie.MovieGenres);
+
+                    // Add new genres
+                    foreach (var genreId in movieDto.GenreIds)
+                    {
+                        _context.MovieGenres.Add(new MovieGenre
+                        {
+                            MovieID = movie.MovieID,
+                            GenreID = genreId
+                        });
+                    }
+                }
+
+                // Save changes
+                await _context.SaveChangesAsync();
+
+                response.Status = ServiceResponse.ServiceStatus.Updated;
+            }
+            catch (Exception ex)
+            {
+                response.Status = ServiceResponse.ServiceStatus.Error;
+                response.Messages.Add($"Error updating movie: {ex.Message}");
             }
 
-            movie.Title = movieDto.Title;
-            movie.Description = movieDto.Description;
-            movie.ReleaseDate = movieDto.ReleaseDate;
-            movie.PosterURL = movieDto.PosterURL;
-            movie.Director = movieDto.Director;
-            movie.OriginId = movieDto.OriginId;
-
-            await _context.SaveChangesAsync();
-
-            return new ServiceResponse
-            {
-                Status = ServiceResponse.ServiceStatus.Updated,
-                Messages = new List<string> { "Movie updated successfully." }
-            };
+            return response;
         }
+
 
         public async Task<ServiceResponse> DeleteMovie(int id)
         {

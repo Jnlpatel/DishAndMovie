@@ -90,7 +90,7 @@ namespace DishAndMovie.Controllers.Api
                 return BadRequest("Movie ID mismatch.");
             }
 
-            var response = await _movieService.UpdateMovie(movieDto);
+            var response = await _movieService.UpdateMovie(id, movieDto);
             if (response.Status == ServiceResponse.ServiceStatus.Error)
             {
                 return NotFound(response.Messages);

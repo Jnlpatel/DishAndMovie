@@ -60,13 +60,25 @@ namespace DishAndMovie.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            // Retrieve list of genres and origins (assuming you have a service for these)
-            ViewBag.Genres = await _movieService.GetGenresAsync();  // Fetch genres
-            ViewBag.Origins = await _movieService.GetOriginsAsync();  // Fetch origins
+            try
+            {
+                // Retrieve list of genres and origins
+                ViewBag.Genres = await _movieService.GetGenresAsync();
+                ViewBag.Origins = await _movieService.GetOriginsAsync();
 
-          
-            // Return the view with the initial model (MovieDto) to bind the form fields
-            return View(new MovieDto());
+                // Set default release date to today
+                var movieDto = new MovieDto
+                {
+                    ReleaseDate = DateTime.Today
+                };
+                // Return the view with the initial model (MovieDto) to bind the form fields
+                return View(new MovieDto());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Create form: {ex.Message}");
+                return View("Error");
+            }
         }
 
         /// <summary>
@@ -74,107 +86,199 @@ namespace DishAndMovie.Controllers
         /// </summary>
         /// <param name="movieDto">The movie details entered by the user.</param>
         /// <returns>Redirects to the movie details page if successful, otherwise shows validation errors.</returns>
-        // POST: Movies/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Create(MovieDto movieDto)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Call the service to add the movie and genres
-                var response = await _movieService.AddMovie(movieDto);
-
-                if (response.Status == ServiceResponse.ServiceStatus.Created)
+                if (ModelState.IsValid)
                 {
-                    // Redirect to the movie index page after successful creation
-                    return RedirectToAction(nameof(Index));
+                    // Log the incoming data for debugging
+                    _logger.LogInformation($"Received movie submission: Title={movieDto.Title}, GenreCount={movieDto.GenreIds?.Count ?? 0}");
+
+                    // Call the service to add the movie and genres
+                    var response = await _movieService.AddMovie(movieDto);
+
+                    if (response.Status == ServiceResponse.ServiceStatus.Created)
+                    {
+                        _logger.LogInformation($"Movie created successfully with ID: {response.CreatedId}");
+                        // Redirect to the movie index page after successful creation
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        // If there was an error, log it and return the error message to the view
+                        _logger.LogWarning($"Movie creation failed: {string.Join(", ", response.Messages)}");
+                        ModelState.AddModelError("", "An error occurred while creating the movie: " + string.Join(", ", response.Messages));
+                    }
                 }
                 else
                 {
-                    // If there was an error, return the error message to the view
-                    ModelState.AddModelError("", "An error occurred while creating the movie: " + string.Join(", ", response.Messages));
+                    // Log validation errors
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage);
+                    _logger.LogWarning($"Model validation failed: {string.Join(", ", errors)}");
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception during movie creation: {ex.Message}");
+                ModelState.AddModelError("", $"An unexpected error occurred: {ex.Message}");
+            }
 
-            // If the model is invalid, return the form with current data
-            // Load genres and origins for dropdown lists in the view
+            // If the model is invalid or there was an error, return the form with current data
+            // Load genres and origins for dropdown lists in the view again
             ViewBag.Genres = await _movieService.GetGenresAsync();
             ViewBag.Origins = await _movieService.GetOriginsAsync();
             return View(movieDto);
         }
 
 
-
         /// <summary>
         /// Displays the form for editing an existing movie.
         /// </summary>
         /// <param name="id">The ID of the movie to edit.</param>
-        /// <returns>A view with the movie details to edit.</returns>
+        /// <returns>A view with the movie's existing details.</returns>
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var movie = await _movieService.FindMovie(id);
-            if (movie == null)
+            try
             {
-                _logger.LogWarning($"Movie with ID {id} not found.");
+                // Fetch the movie details
+                var movie = await _movieService.FindMovie(id);
+                if (movie == null)
+                {
+                    _logger.LogWarning($"Movie with ID {id} not found.");
+                    return NotFound();
+                }
+
+                // Fetch genres and origins for dropdowns
+                ViewBag.Genres = await _movieService.GetGenresAsync();
+                ViewBag.Origins = await _movieService.GetOriginsAsync();
+
+                // Return the movie details for editing
+                return View(movie);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading Edit form for movie ID {id}: {ex.Message}");
                 return View("Error");
             }
-            return View(movie);  // Pass the movie to the view for editing.
         }
 
         /// <summary>
-        /// Handles the form submission to update an existing movie.
+        /// Handles the submission of edited movie details.
         /// </summary>
-        /// <param name="id">The ID of the movie to update.</param>
+        /// <param name="id">The ID of the movie being edited.</param>
         /// <param name="movieDto">The updated movie details.</param>
         /// <returns>Redirects to the movie details page if successful, otherwise shows validation errors.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, MovieDto movieDto)
         {
             if (id != movieDto.MovieID)
             {
-                _logger.LogError("Movie ID mismatch.");
                 return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                var response = await _movieService.UpdateMovie(movieDto);
-                if (response.Status == ServiceResponse.ServiceStatus.Updated)
+                if (ModelState.IsValid)
                 {
-                    return RedirectToAction("Details", new { id = movieDto.MovieID });
+                    _logger.LogInformation($"Updating movie ID {id}: Title={movieDto.Title}");
+
+                    var response = await _movieService.UpdateMovie(id, movieDto);
+
+                    if (response.Status == ServiceResponse.ServiceStatus.Updated)
+                    {
+                        _logger.LogInformation($"Movie ID {id} updated successfully.");
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Movie update failed: {string.Join(", ", response.Messages)}");
+                        ModelState.AddModelError("", "An error occurred while updating the movie: " + string.Join(", ", response.Messages));
+                    }
                 }
                 else
                 {
-                    _logger.LogError($"Error updating movie: {string.Join(", ", response.Messages)}");
-                    ModelState.AddModelError("", string.Join(", ", response.Messages));
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    _logger.LogWarning($"Validation failed for movie ID {id}: {string.Join(", ", errors)}");
                 }
             }
-            return View(movieDto);  // Return the view with validation errors if any.
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception during movie update: {ex.Message}");
+                ModelState.AddModelError("", $"An unexpected error occurred: {ex.Message}");
+            }
+
+            // Reload genres and origins in case of error
+            ViewBag.Genres = await _movieService.GetGenresAsync();
+            ViewBag.Origins = await _movieService.GetOriginsAsync();
+            return View(movieDto);
         }
 
         /// <summary>
-        /// Deletes a movie by ID.
+        /// Displays a confirmation page to delete a movie.
         /// </summary>
         /// <param name="id">The ID of the movie to delete.</param>
-        /// <returns>Redirects to the movies list page after deletion.</returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        /// <returns>A view displaying the movie information to confirm deletion.</returns>
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var response = await _movieService.DeleteMovie(id);
-            if (response.Status == ServiceResponse.ServiceStatus.Deleted)
+            try
             {
-                return RedirectToAction("Index");
+                var movie = await _movieService.FindMovie(id);
+                if (movie == null)
+                {
+                    _logger.LogWarning($"Delete: Movie with ID {id} not found.");
+                    return NotFound();
+                }
+
+                return View(movie);
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogError($"Error deleting movie with ID {id}: {string.Join(", ", response.Messages)}");
+                _logger.LogError($"Error loading Delete view: {ex.Message}");
                 return View("Error");
             }
         }
+
+        /// <summary>
+        /// Handles the deletion of a movie after confirmation.
+        /// </summary>
+        /// <param name="id">The ID of the movie to delete.</param>
+        /// <returns>Redirects to Index if successful, otherwise shows an error.</returns>
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                var response = await _movieService.DeleteMovie(id);
+
+                if (response.Status == ServiceResponse.ServiceStatus.Deleted)
+                {
+                    _logger.LogInformation($"Movie with ID {id} deleted successfully.");
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _logger.LogWarning($"Movie delete failed for ID {id}: {string.Join(", ", response.Messages)}");
+                ModelState.AddModelError("", "Failed to delete the movie.");
+                return View("Error");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception during movie deletion: {ex.Message}");
+                return View("Error");
+            }
+        }
+
+
 
         /// <summary>
         /// Displays reviews for a movie.

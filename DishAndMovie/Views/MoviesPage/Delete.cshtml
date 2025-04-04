@@ -1,0 +1,52 @@
+﻿@model DishAndMovie.Models.MovieDto
+
+@{
+    ViewData["Title"] = "Delete Movie";
+}
+
+<style>
+    .delete-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 12px;
+        background-color: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ccc;
+    }
+
+    .delete-header {
+        font-size: 1.5rem;
+        color: #b30000;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .delete-info {
+        margin-bottom: 20px;
+    }
+
+    .delete-buttons {
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+
+<div class="delete-container">
+    <div class="delete-header">Are you sure you want to delete this movie?</div>
+
+    <div class="delete-info">
+        <strong>Title:</strong> @Model.Title <br />
+        <strong>Director:</strong> @Model.Director <br />
+        <strong>Release Date:</strong> @Model.ReleaseDate.ToString("dd-MM-yyyy")
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="MovieID" />
+        <div class="delete-buttons">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

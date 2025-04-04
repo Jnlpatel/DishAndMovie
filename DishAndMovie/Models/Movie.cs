@@ -45,9 +45,10 @@ namespace DishAndMovie.Models
         public string PosterURL { get; set; }
         public string Director { get; set; }
         public int OriginId { get; set; }
-        public string OriginCountry { get; set; }  // From Origin entity
         public List<int>? GenreIds { get; set; } // List of Genre IDs for many-to-many relation
+        public List<string>? GenreNames { get; set; }
+
 
     }
-   
+
 }
