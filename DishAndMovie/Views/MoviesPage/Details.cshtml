@@ -64,6 +64,27 @@
     </div>
 </div>
 
+@if (Model.RecipesFromSameOrigin != null && Model.RecipesFromSameOrigin.Any())
+{
+    <div class="container">
+        <div class="suggested-movie">
+
+            <div class="related-recipes">
+                <h3>Recipes from the same origin</h3>
+                <ul>
+                    @foreach (var recipe in Model.RecipesFromSameOrigin)
+                    {
+                        <li>
+                            <strong>@recipe.Name</strong><br />
+                        </li>
+                    }
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+}
 <style>
     .movie-details {
         background-color: white;
@@ -73,6 +94,14 @@
         margin-bottom: 30px;
     }
 
+    .movie-details {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
     .movie-header {
         background-color: #f8f9fa;
         padding: 20px;

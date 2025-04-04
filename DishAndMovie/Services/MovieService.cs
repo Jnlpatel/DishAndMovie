@@ -44,6 +44,10 @@ namespace DishAndMovie.Services
             if (movie == null)
                 return null;
 
+            var recipes = await _context.Recipes
+            .Where(r => r.OriginId == movie.OriginId)
+            .ToListAsync();
+
             return new MovieDto
             {
                 MovieID = movie.MovieID,
@@ -54,7 +58,8 @@ namespace DishAndMovie.Services
                 Director = movie.Director,
                 OriginId = movie.OriginId,
                 GenreIds = movie.MovieGenres.Select(mg => mg.GenreID).ToList(),
-                GenreNames = movie.MovieGenres?.Select(g => g.Genre.Name).ToList()
+                GenreNames = movie.MovieGenres?.Select(g => g.Genre.Name).ToList(),
+                RecipesFromSameOrigin = recipes // 👈 assign recipes here
 
             };
         }

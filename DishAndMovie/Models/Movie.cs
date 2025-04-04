@@ -47,6 +47,8 @@ namespace DishAndMovie.Models
         public int OriginId { get; set; }
         public List<int>? GenreIds { get; set; } // List of Genre IDs for many-to-many relation
         public List<string>? GenreNames { get; set; }
+        public List<Recipe>? RecipesFromSameOrigin { get; set; } // 👈 Add this
+
 
 
     }
