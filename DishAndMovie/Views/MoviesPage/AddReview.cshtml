@@ -1,0 +1,194 @@
+﻿
+@model ReviewDto
+
+@{
+    ViewData["Title"] = "Add Review";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+    <div class="reviews-container">
+        <div class="review-form">
+            <div class="form-title">Add Your Review</div>
+            <form asp-action="AddReview" method="post">
+            <input type="hidden" name="movieId" value="@Model.MovieID" />
+            <input type="hidden" asp-for="UserID" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label for="ReviewText">Your Review</label>
+                    <textarea id="ReviewText" name="ReviewText" placeholder="Write your review here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="Rating">Rating</label>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="Rating" value="5" />
+                        <label for="star5" title="5 stars"></label>
+                        <input type="radio" id="star4" name="Rating" value="4" />
+                        <label for="star4" title="4 stars"></label>
+                        <input type="radio" id="star3" name="Rating" value="3" />
+                        <label for="star3" title="3 stars"></label>
+                        <input type="radio" id="star2" name="Rating" value="2" />
+                        <label for="star2" title="2 stars"></label>
+                        <input type="radio" id="star1" name="Rating" value="1" />
+                        <label for="star1" title="1 star"></label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                <button type="submit" class="button submit" value="AddReview">Submit Review</button>
+                    <a asp-action="Details" class="button back">Back to Movie</a>
+                </div>
+            </form>
+        </div>
+
+<a href="@Url.Action("Reviews", new { movieId = Model.MovieID })">Back to Reviews</a>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-weight: normal;
+        }
+
+        .reviews-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .review-form {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: bold;
+                color: #333;
+            }
+
+            .form-group textarea,
+            .form-group select,
+            .form-group input {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #ddd;
+                border-radius: 6px;
+                font-size: 16px;
+                transition: border-color 0.3s ease;
+            }
+
+                .form-group textarea:focus,
+                .form-group select:focus,
+                .form-group input:focus {
+                    border-color: #3498db;
+                    outline: none;
+                }
+
+            .form-group textarea {
+                min-height: 100px;
+                resize: vertical;
+            }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+            .star-rating input {
+                display: none;
+            }
+
+            .star-rating label {
+                cursor: pointer;
+                width: 30px;
+                height: 30px;
+                margin-right: 5px;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>');
+                background-repeat: no-repeat;
+                background-position: center;
+                filter: grayscale(100%);
+                opacity: 0.5;
+                transition: filter 0.3s, opacity 0.3s;
+            }
+
+                .star-rating input:checked ~ label,
+                .star-rating label:hover,
+                .star-rating label:hover ~ label {
+                    filter: grayscale(0);
+                    opacity: 1;
+                }
+
+        .button {
+            padding: 12px 20px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .submit {
+            background-color: #3498db;
+        }
+
+            .submit:hover {
+                background-color: #2980b9;
+            }
+
+        .back {
+            background-color: #7f8c8d;
+        }
+
+            .back:hover {
+                background-color: #95a5a6;
+            }
+
+        .text-danger {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        </style>

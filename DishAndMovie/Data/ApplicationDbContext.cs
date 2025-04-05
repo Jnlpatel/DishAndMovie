@@ -38,17 +38,8 @@ namespace DishAndMovie.Data
             modelBuilder.Entity<MovieGenre>()
                 .HasKey(mg => new { mg.MovieID, mg.GenreID });
 
-            modelBuilder.Entity<MovieGenre>()
-                .HasOne(mg => mg.Movie)
-                .WithMany(m => m.MovieGenres)
-                .HasForeignKey(mg => mg.MovieID);
-
-            modelBuilder.Entity<MovieGenre>()
-                .HasOne(mg => mg.Genre)
-                .WithMany(g => g.MovieGenres)
-                .HasForeignKey(mg => mg.GenreID);
-
             // Configure the relationship between Review and ApplicationUser
+
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)
@@ -60,6 +51,28 @@ namespace DishAndMovie.Data
                 .HasOne(m => m.Origin)
                 .WithMany(o => o.Movies)
                 .HasForeignKey(m => m.OriginId);
+            // Configure cascading delete for Movie -> MovieGenre relationship
+            modelBuilder.Entity<MovieGenre>()
+                .HasOne(mg => mg.Movie)
+                .WithMany(m => m.MovieGenres)
+                .HasForeignKey(mg => mg.MovieID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure cascading delete for Movie -> Review relationship
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Movie)
+                .WithMany(m => m.Reviews)
+                .HasForeignKey(r => r.MovieID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure cascading delete for Genre -> MovieGenre relationship
+            modelBuilder.Entity<MovieGenre>()
+                .HasOne(mg => mg.Genre)
+                .WithMany(g => g.MovieGenres)
+                .HasForeignKey(mg => mg.GenreID)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+        
         }
     }
-}
+

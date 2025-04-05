@@ -16,15 +16,19 @@ namespace DishAndMovie.Services
 
         public async Task<IEnumerable<ReviewDto>> ListReviewsByMovie(int MovieID)
         {
+            Console.WriteLine(MovieID);
             return await _context.Reviews
                 .Where(r => r.MovieID == MovieID)
                 .Select(r => new ReviewDto
                 {
                     ReviewID = r.ReviewID,
                     MovieID = r.MovieID,
+                    UserID = r.UserID,
                     Rating = r.Rating,
-                    ReviewText = r.ReviewText
-                }).ToListAsync();
+                    ReviewText = r.ReviewText,
+                    ReviewDate = r.ReviewDate  // Ensure the date is set to current date and time
+
+        }).ToListAsync();
         }
 
         public async Task<ReviewDto?> FindReview(int id)
@@ -38,8 +42,10 @@ namespace DishAndMovie.Services
             {
                 ReviewID = review.ReviewID,
                 MovieID = review.MovieID,
+                UserID = review.UserID,
                 Rating = review.Rating,
-                ReviewText = review.ReviewText
+                ReviewText = review.ReviewText,
+                ReviewDate = review.ReviewDate
             };
         }
 
@@ -48,8 +54,10 @@ namespace DishAndMovie.Services
             var review = new Review
             {
                 MovieID = reviewDto.MovieID,
+                UserID = reviewDto.UserID,
                 Rating = reviewDto.Rating,
-                ReviewText = reviewDto.ReviewText
+                ReviewText = reviewDto.ReviewText,
+                ReviewDate = DateTime.Now  // Set ReviewDate to current server time
             };
 
             _context.Reviews.Add(review);
