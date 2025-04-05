@@ -3,6 +3,7 @@ using DishAndMovie.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DishAndMovie.Controllers
@@ -20,10 +21,8 @@ namespace DishAndMovie.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Displays a list of all movies.
-        /// </summary>
-        /// <returns>A view showing all movies.</returns>
+        // GET: MoviePage
+        // This action handles the request for displaying the list of movies on the movie page.
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -31,16 +30,13 @@ namespace DishAndMovie.Controllers
             if (movies == null)
             {
                 _logger.LogWarning("No movies found.");
-                return View("Error");  // An error view can be shown if no movies are available.
+                return View("Error");  
             }
-            return View(movies);  // Pass the list of movies to the view.
+            return View(movies);  
         }
 
-        /// <summary>
-        /// Displays the details of a single movie.
-        /// </summary>
-        /// <param name="id">The ID of the movie.</param>
-        /// <returns>A view showing the details of the movie.</returns>
+        // GET: MoviesPage/Details/5
+        // This action handles requests to view the details of a specific movie.
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
@@ -48,15 +44,13 @@ namespace DishAndMovie.Controllers
             if (movie == null)
             {
                 _logger.LogWarning($"Movie with ID {id} not found.");
-                return View("Error");  // Show an error page if the movie is not found.
+                return View("Error");  
             }
-            return View(movie);  // Show the details of the movie.
+            return View(movie);  
         }
 
-        /// <summary>
-        /// Displays the form for adding a new movie.
-        /// </summary>
-        /// <returns>A view to create a new movie.</returns>
+        // GET: MoviePage/Create
+        // This action displays the form to create a new movie entry.
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -66,12 +60,11 @@ namespace DishAndMovie.Controllers
                 ViewBag.Genres = await _movieService.GetGenresAsync();
                 ViewBag.Origins = await _movieService.GetOriginsAsync();
 
-                // Set default release date to today
                 var movieDto = new MovieDto
                 {
                     ReleaseDate = DateTime.Today
                 };
-                // Return the view with the initial model (MovieDto) to bind the form fields
+
                 return View(new MovieDto());
             }
             catch (Exception ex)
@@ -81,11 +74,8 @@ namespace DishAndMovie.Controllers
             }
         }
 
-        /// <summary>
-        /// Handles the form submission to create a new movie.
-        /// </summary>
-        /// <param name="movieDto">The movie details entered by the user.</param>
-        /// <returns>Redirects to the movie details page if successful, otherwise shows validation errors.</returns>
+        // POST: MoviePage/Create
+        // This action handles the submission of a new movie entry and adds it to the database.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -98,18 +88,16 @@ namespace DishAndMovie.Controllers
                     // Log the incoming data for debugging
                     _logger.LogInformation($"Received movie submission: Title={movieDto.Title}, GenreCount={movieDto.GenreIds?.Count ?? 0}");
 
-                    // Call the service to add the movie and genres
                     var response = await _movieService.AddMovie(movieDto);
 
                     if (response.Status == ServiceResponse.ServiceStatus.Created)
                     {
                         _logger.LogInformation($"Movie created successfully with ID: {response.CreatedId}");
-                        // Redirect to the movie index page after successful creation
+
                         return RedirectToAction(nameof(Index));
                     }
                     else
                     {
-                        // If there was an error, log it and return the error message to the view
                         _logger.LogWarning($"Movie creation failed: {string.Join(", ", response.Messages)}");
                         ModelState.AddModelError("", "An error occurred while creating the movie: " + string.Join(", ", response.Messages));
                     }
@@ -137,11 +125,8 @@ namespace DishAndMovie.Controllers
         }
 
 
-        /// <summary>
-        /// Displays the form for editing an existing movie.
-        /// </summary>
-        /// <param name="id">The ID of the movie to edit.</param>
-        /// <returns>A view with the movie's existing details.</returns>
+        // GET: MoviePage/Edit/{id}
+        // This action fetches the movie entry by ID and displays it in the edit form.
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -169,12 +154,8 @@ namespace DishAndMovie.Controllers
             }
         }
 
-        /// <summary>
-        /// Handles the submission of edited movie details.
-        /// </summary>
-        /// <param name="id">The ID of the movie being edited.</param>
-        /// <param name="movieDto">The updated movie details.</param>
-        /// <returns>Redirects to the movie details page if successful, otherwise shows validation errors.</returns>
+        // POST: MoviePage/Edit/{id}
+        // This action updates the existing movie entry with new data from the edit form.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -222,11 +203,8 @@ namespace DishAndMovie.Controllers
             return View(movieDto);
         }
 
-        /// <summary>
-        /// Displays a confirmation page to delete a movie.
-        /// </summary>
-        /// <param name="id">The ID of the movie to delete.</param>
-        /// <returns>A view displaying the movie information to confirm deletion.</returns>
+        // GET: MoviePage/Delete/{id}
+        // This action fetches a movie entry to confirm deletion.
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -248,11 +226,8 @@ namespace DishAndMovie.Controllers
             }
         }
 
-        /// <summary>
-        /// Handles the deletion of a movie after confirmation.
-        /// </summary>
-        /// <param name="id">The ID of the movie to delete.</param>
-        /// <returns>Redirects to Index if successful, otherwise shows an error.</returns>
+        // POST: MoviePage/Delete/{id}
+        // This action deletes the movie entry from the database after confirmation.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -278,13 +253,8 @@ namespace DishAndMovie.Controllers
             }
         }
 
-
-
-        /// <summary>
-        /// Displays reviews for a movie.
-        /// </summary>
-        /// <param name="movieId">The ID of the movie.</param>
-        /// <returns>A view with the movie's reviews.</returns>
+        // GET: MoviePage/Reviews/{movieId}
+        // Displays the list of reviews for the specified movie.
         [HttpGet]
         public async Task<IActionResult> Reviews(int movieId)
         {
@@ -294,20 +264,45 @@ namespace DishAndMovie.Controllers
                 _logger.LogWarning($"No reviews found for movie ID {movieId}.");
                 return View("Error");
             }
+            // Set the movieId in ViewData for easy access in the view
+            ViewData["MovieId"] = movieId;
+
             return View(reviews);
         }
 
-        /// <summary>
-        /// Adds a review for a movie.
-        /// </summary>
-        /// <param name="movieId">The ID of the movie to review.</param>
-        /// <param name="reviewDto">The review details entered by the user.</param>
-        /// <returns>Redirects to the movie details page after adding the review.</returns>
+        // GET: MoviePage/AddReview
+        // This action handles the request for displaying the review creation form for a movie.
+        [HttpGet]
+        [Authorize]
+        public IActionResult AddReview(int movieId)
+        {
+            // Fetch movie details to include in the form
+            var movie = _movieService.FindMovie(movieId);
+            if (movie == null)
+            {
+                _logger.LogWarning($"Movie with ID {movieId} not found.");
+                return View("Error");
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var reviewDto = new ReviewDto { 
+                MovieID = movieId,
+                UserID = userId
+            };
+            return View(reviewDto);
+        }
+
+        // POST: MoviePage/AddReview/{movieId}
+        // Adds a new review to the specified movie after validating the input.
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> AddReview(int movieId, ReviewDto reviewDto)
         {
+
             reviewDto.MovieID = movieId;
+            reviewDto.ReviewDate = DateTime.Now;  // Ensure the date is set to current date and time
 
             if (ModelState.IsValid)
             {
@@ -323,22 +318,43 @@ namespace DishAndMovie.Controllers
                 }
             }
 
-            return View("Reviews", new { movieId = movieId });  // Return the reviews view with validation errors.
+            return View(reviewDto); // Return the same view with validation errors
         }
 
-        /// <summary>
-        /// Deletes a review for a movie.
-        /// </summary>
-        /// <param name="movieId">The ID of the movie to delete the review from.</param>
-        /// <param name="reviewId">The ID of the review to delete.</param>
-        /// <returns>Redirects to the movie's reviews page after deletion.</returns>
+        // GET: MoviesPage/DeleteReview/{movieId}/{reviewId}
+        // Displays the confirmation page to delete a review.
+        [HttpGet]
+        public async Task<IActionResult> DeleteReview(int movieId, int reviewId)
+        {
+            Console.WriteLine("here");
+            // Fetch the review details using the reviewId
+            var review = await _reviewService.FindReview(reviewId);
+
+            if (review == null)
+            {
+                // If the review is not found, show an error page
+                _logger.LogWarning($"Review with ID {reviewId} not found for movie ID {movieId}.");
+                return View("Error");
+            }
+
+            // Pass the review details to the view so the user can confirm deletion
+            ViewData["MovieId"] = movieId;
+            return View(review);
+        }
+
+
+
+        // POST: MoviePage/DeleteReview
+        // This action deletes a review for a movie.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteReview(int movieId, int reviewId)
+        [Authorize]
+        public async Task<IActionResult> ConfirmDeleteReview(int movieId, int reviewId)
         {
             var response = await _reviewService.DeleteReview(reviewId);
             if (response.Status == ServiceResponse.ServiceStatus.Deleted)
             {
+                ViewData["MovieId"] = movieId;
                 return RedirectToAction("Reviews", new { movieId = movieId });
             }
             else
@@ -347,5 +363,6 @@ namespace DishAndMovie.Controllers
                 return View("Error");
             }
         }
+
     }
 }

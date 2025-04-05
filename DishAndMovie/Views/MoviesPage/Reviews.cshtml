@@ -1,0 +1,149 @@
+﻿@model IEnumerable<ReviewDto>
+
+@{
+    ViewData["Title"] = "Movie Reviews";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex-grow: 1;
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+            .navigation a {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: #2980b9;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+
+                .navigation a:hover {
+                    background-color: #1c6391;
+                }
+
+        .movies-table {
+            width: 100%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+            .movies-table th, .movies-table td {
+                padding: 12px 15px;
+                border: 2px solid #ddd;
+                text-align: left;
+            }
+
+            .movies-table th {
+                background-color: #34495e;
+                color: white;
+            }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+            .button:hover {
+                background-color: #1c6391;
+            }
+
+            .button.delete {
+                background-color: #e74c3c;
+            }
+
+                .button.delete:hover {
+                    background-color: #c0392b;
+                }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Movies List</h1>
+
+        <div class="navigation">
+            <!-- Add a Review Button -->
+            <a href="@Url.Action("AddReview", new { movieId = ViewData["MovieId"] })" class="btn btn-primary">Add Review</a>
+        </div>
+        @if (!Model.Any())
+        {
+            <p>No reviews available for this movie.</p>
+        }
+        else
+        {
+        <table class="movies-table">
+            <thead>
+                <tr>
+                    <th>Reviewer</th>
+                    <th>Rating</th>
+                    <th>ReviewText</th>
+                    <th>ReviewDate</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var review in Model)
+                {
+                    <tr>
+                        <td>@review.UserID</td>
+                        <td>@review.Rating</td>
+                        <td>@review.ReviewText</td>
+                        <td>@review.ReviewDate.ToShortDateString()</td>
+                        <td>
+                               
+                                <a class="button delete" href="@Url.Action("DeleteReview", "MoviesPage", new { movieId = review.MovieID, reviewId = review.ReviewID })">Delete</a>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        }    
+        <hr/>
+        <a href="@Url.Action("Details", "MoviesPage", new { id = ViewData["MovieId"] })" class="btn btn-secondary mt-3">Back to Movie Details</a>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+﻿@model ReviewDto
+
+@{
+    ViewData["Title"] = "Delete Review";
+}
+
+<style>
+    .delete-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 12px;
+        background-color: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ccc;
+    }
+
+    .delete-header {
+        font-size: 1.5rem;
+        color: #b30000;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .delete-info {
+        margin-bottom: 20px;
+    }
+
+    .delete-buttons {
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+
+<div class="delete-container">
+    <div class="delete-header">Are you sure you want to delete this movie?</div>
+
+    <div class="delete-info">
+        <strong>ReviewText:</strong> @Model.ReviewText <br />
+        <strong>Rating:</strong> @Model.Rating <br />
+    </div>
+
+    <form method="post" asp-action="ConfirmDeleteReview" asp-route-reviewId="@Model.ReviewID">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="@Url.Action("Reviews", new { movieId =  ViewData["MovieId"] })" class="btn btn-secondary">Cancel</a>
+
+    </form>
+</div>

@@ -37,7 +37,6 @@ namespace DishAndMovie.Models
     {
         public int ReviewID { get; set; }
         public int MovieID { get; set; }
-        public string MovieTitle { get; set; }
         public string UserID { get; set; }
         public string ReviewText { get; set; }
         public int Rating { get; set; }
