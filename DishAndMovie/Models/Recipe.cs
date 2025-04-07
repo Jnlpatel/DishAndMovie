@@ -25,6 +25,7 @@ namespace DishAndMovie.Models
         public string Name { get; set; }
         public int OriginId { get; set; }
 
+        public List<Movie>? MoviesFromSameOrigin { get; set; }
     }
 
 }
