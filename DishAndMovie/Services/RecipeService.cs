@@ -2,6 +2,7 @@
 using DishAndMovie.Models;
 using DishAndMovie.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using DishAndMovie.Data.Migrations;
 
 namespace DishAndMovie.Services
 {
@@ -46,12 +47,17 @@ namespace DishAndMovie.Services
                 return null;
             }
 
+            var movies = await _context.Movies
+                .Where(r => r.OriginId == recipe.OriginId)
+                .ToListAsync();
+
             // Convert to RecipeDto, including both OriginId and OriginCountry
             var recipeDto = new RecipeDto()
             {
                 RecipeId = recipe.RecipeId,
                 Name = recipe.Name,
-                OriginId = recipe.OriginId, // Include OriginId
+                OriginId = recipe.OriginId,
+                MoviesFromSameOrigin = movies //
             };
 
             return recipeDto;
