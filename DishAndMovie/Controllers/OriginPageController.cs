@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using DishAndMovie.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +9,17 @@ namespace DishAndMovie.Controllers
     public class OriginPageController : Controller
     {
         private readonly IOriginService _originService;
+        private readonly IMovieService _movieService;
+        private readonly IRecipeService _recipeService;
 
         // Dependency injection for IOriginService
-        public OriginPageController(IOriginService originService)
+        public OriginPageController(IOriginService originService, IMovieService movieService,
+            IRecipeService recipeService)
         {
             _originService = originService;
+            _movieService = movieService;
+            _recipeService = recipeService;
+
         }
 
         // Redirecting to List action when the Index is hit
@@ -132,6 +139,26 @@ namespace DishAndMovie.Controllers
             {
                 return View("Error", new ErrorViewModel() { Errors = response.Messages });
             }
+        }
+
+        // View showing movies from specific origin
+        [HttpGet("Origins/MoviesByOrigin/{originId}")]
+        public async Task<IActionResult> MoviesByOrigin(int originId)
+        {
+            var movies = await _movieService.GetMoviesByOriginAsync(originId);
+            var origin = await _originService.FindOrigin(originId);
+            ViewBag.OriginName = origin?.OriginCountry ?? "Unknown Origin";
+            return View(movies);
+        }
+
+        // View showing recipes from specific origin
+        [HttpGet("Origins/RecipesByOrigin/{originId}")]
+        public async Task<IActionResult> RecipesByOrigin(int originId)
+        {
+            var recipes = await _recipeService.GetRecipesByOriginAsync(originId);
+            var origin = await _originService.FindOrigin(originId);
+            ViewBag.OriginName = origin?.OriginCountry ?? "Unknown Origin";
+            return View(recipes);
         }
     }
 }

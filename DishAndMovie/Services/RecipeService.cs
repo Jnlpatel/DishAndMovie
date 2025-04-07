@@ -181,5 +181,17 @@ namespace DishAndMovie.Services
                 })
                 .ToListAsync();
         }
+        public async Task<IEnumerable<RecipeDto>> GetRecipesByOriginAsync(int originId)
+        {
+            return await _context.Recipes
+                .Where(r => r.OriginId == originId)
+                .Include(r => r.Origin)
+                .Select(r => new RecipeDto
+                {
+                    RecipeId = r.RecipeId,
+                    Name = r.Name,
+                })
+                .ToListAsync();
+        }
     }
 }

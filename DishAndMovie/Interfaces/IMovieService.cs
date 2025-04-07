@@ -13,6 +13,8 @@ namespace DishAndMovie.Interfaces
         Task<ServiceResponse> DeleteMovie(int id);
         Task<List<GenreDto>> GetGenresAsync();  // Retrieve list of genres
         Task<List<OriginDto>> GetOriginsAsync();  // Retrieve list of origins
+        Task<IEnumerable<MovieDto>> GetMoviesByOriginAsync(int originId);
+
 
     }
 }
