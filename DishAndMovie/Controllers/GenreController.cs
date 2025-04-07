@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DishAndMovie.Controllers
@@ -70,6 +71,7 @@ namespace DishAndMovie.Controllers
         /// { "Status": "Created", "Messages": ["Genre added successfully."] }
         /// </example>
         [HttpPost("AddGenre")]
+        [Authorize]
         public async Task<ActionResult<ServiceResponse>> AddGenre([FromBody] GenreDto genreDto)
         {
             var response = await _genreService.AddGenre(genreDto);
@@ -89,6 +91,7 @@ namespace DishAndMovie.Controllers
         /// { "Status": "Updated", "Messages": ["Genre updated successfully."] }
         /// </example>
         [HttpPut("UpdateGenre")]
+        [Authorize]
         public async Task<ActionResult<ServiceResponse>> UpdateGenre([FromBody] GenreDto genreDto)
         {
             var response = await _genreService.UpdateGenre(genreDto);
@@ -106,6 +109,7 @@ namespace DishAndMovie.Controllers
         /// { "Status": "Deleted", "Messages": ["Genre deleted successfully."] }
         /// </example>
         [HttpDelete("DeleteGenre/{id}")]
+        [Authorize]
         public async Task<ActionResult<ServiceResponse>> DeleteGenre(int id)
         {
             var response = await _genreService.DeleteGenre(id);

@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DishAndMovie.Controllers.Api
@@ -62,6 +63,7 @@ namespace DishAndMovie.Controllers.Api
         /// Body: { "Title": "Inception", "ReleaseDate": "2010-07-16", "Director": "Christopher Nolan", "PosterURL": "...", "OriginCountry": "USA" }
         /// </example>
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddMovie([FromBody] MovieDto movieDto)
         {
             var response = await _movieService.AddMovie(movieDto);
@@ -83,6 +85,7 @@ namespace DishAndMovie.Controllers.Api
         /// Body: { "Title": "Inception Updated", "ReleaseDate": "2010-07-16", "Director": "Christopher Nolan", "PosterURL": "updatedPoster.jpg", "OriginCountry": "USA" }
         /// </example>
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateMovie(int id, [FromBody] MovieDto movieDto)
         {
             if (id != movieDto.MovieID)
@@ -108,6 +111,7 @@ namespace DishAndMovie.Controllers.Api
         /// Deletes the movie with the given ID.
         /// </example>
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteMovie(int id)
         {
             var response = await _movieService.DeleteMovie(id);
@@ -145,6 +149,7 @@ namespace DishAndMovie.Controllers.Api
         /// Body: { "ReviewText": "Great movie!", "Rating": 5, "UserID": "user123" }
         /// </example>
         [HttpPost("{movieId}/reviews")]
+        [Authorize]
         public async Task<IActionResult> AddReviewToMovie(int movieId, [FromBody] ReviewDto reviewDto)
         {
             reviewDto.MovieID = movieId;
@@ -168,6 +173,7 @@ namespace DishAndMovie.Controllers.Api
         /// Body: { "ReviewText": "Amazing movie!", "Rating": 5, "UserID": "user123" }
         /// </example>
         [HttpPut("{movieId}/reviews/{reviewId}")]
+        [Authorize]
         public async Task<IActionResult> UpdateReview(int movieId, int reviewId, [FromBody] ReviewDto reviewDto)
         {
             if (reviewId != reviewDto.ReviewID || movieId != reviewDto.MovieID)
@@ -194,6 +200,7 @@ namespace DishAndMovie.Controllers.Api
         /// Deletes the review with the given review ID for the specified movie.
         /// </example>
         [HttpDelete("{movieId}/reviews/{reviewId}")]
+        [Authorize]
         public async Task<IActionResult> DeleteReview(int movieId, int reviewId)
         {
             var response = await _reviewService.DeleteReview(reviewId);

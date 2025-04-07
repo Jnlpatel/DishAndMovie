@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DishAndMovie.Controllers
@@ -46,6 +47,7 @@ namespace DishAndMovie.Controllers
         // GET: GenrePage/Create
         // This action serves the page for adding a new genre.
         // It returns an empty genre DTO to the view for user input.
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -55,6 +57,7 @@ namespace DishAndMovie.Controllers
         // This action handles the form submission for creating a new genre.
         // It takes the genre DTO, validates, and adds it to the database using the genre service.
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create(GenreDto genreDto)
         {
             if (ModelState.IsValid)
@@ -81,6 +84,7 @@ namespace DishAndMovie.Controllers
         // GET: GenrePage/Edit/5
         // This action serves the page for editing an existing genre.
         // It fetches the genre by its ID and passes it to the view for editing.
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             var genre = await _genreService.FindGenre(id);
@@ -100,6 +104,7 @@ namespace DishAndMovie.Controllers
         // POST: GenrePage/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, GenreDto genreDto)
         {
             
@@ -130,6 +135,7 @@ namespace DishAndMovie.Controllers
 
         // GET: GenrePage/Delete/5
         // This action serves the page for confirming the deletion of a genre.
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var genre = await _genreService.FindGenre(id);
@@ -146,6 +152,7 @@ namespace DishAndMovie.Controllers
         // It deletes the genre and redirects to the index page.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var response = await _genreService.DeleteGenre(id);
