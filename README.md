@@ -6,21 +6,28 @@ DishAndMovie is a unique application that connects recipes and movies by their c
 
 ## Features
 
-### 🍽 Recipe Management
+### 🍽 Recipe Management <span style="color:blue">(Digna)</span>
 - *CRUD Operations*: Add, update, remove, and delete recipes.
 - *Meal Planning*: Organize recipes into meal plans.
 - *Ingredient Tracking*: Manage ingredients linked to recipes.
 
-### 🎬 Movie Review System
+### 🎬 Movie Review System <span style="color:blue">(Jinalkumari)</span>
 - *CRUD Operations*: Add, update, remove and delete movies, genres, and reviews.
 - *Genre Classification*: Associate movies with multiple genres.
 - *User Reviews*: Collect and display reviews for movies.
 
-### 🌍 Origin-Based Pairing (New Feature)
+### 🌍 Origin-Based Pairing (New Feature) <span style="color:blue">(Digna & Jinalkumari)</span>
 - *Cultural Tagging: Recipes and movies are linked by shared origins (e.g., *Italian, Indian).
 - *Smart Recommendations*:  
-  - Get movie suggestions for a recipe (e.g., Samosa → taare zameen par).  
-  - Get recipe suggestions for a movie (e.g., Squid game → Kimchi).
+  - Get recipe suggestions for a movie (e.g., Squid game → Kimchi).  <span style="color:blue">(Digna)</span>
+  - Get movie suggestions for a recipe (e.g., Samosa → taare zameen par).  <span style="color:blue">(Jinalkumari)</span>
+- *Origin-Filtered Views*:
+  - *RecipesByOrigin*: View all recipes from a specific country <span style="color:blue">(Digna)</span>
+    - Endpoint: /Origins/RecipesByOrigin/{originId}
+    - Example: /Origins/RecipesByOrigin/1 (Shows all American recipes)
+  - *MoviesByOrigin*: View all movies from a specific country <span style="color:blue">(Jinalkumari)</span>
+    - Endpoint: /Origins/MoviesByOrigin/{originId}
+    - Example: /Origins/MoviesByOrigin/2 (Shows all South Korean movies)
 
 ---
 
