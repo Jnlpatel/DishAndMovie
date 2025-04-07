@@ -72,7 +72,7 @@ namespace DishAndMovie.Controllers
         /// Body: { "IngredientId": 1, "Name": "Chicken Thigh", "Unit": "grams", "CaloriesPerUnit": 175 }
         /// </example>
         [HttpPut(template: "UpdateIngredient/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> UpdateIngredient(int id, IngredientDto ingredientDto)
         {
             // Ensure the ID in the URL matches the ID in the request body
@@ -109,7 +109,7 @@ namespace DishAndMovie.Controllers
         /// { "IngredientId": 9, "Name": "Broccoli", "Unit": "grams", "CaloriesPerUnit": 55 }
         /// </example>
         [HttpPost(template: "AddIngredient")]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<IngredientDto>> AddIngredient(IngredientDto ingredientDto)
         {
             // Call the service to add the ingredient
@@ -139,7 +139,7 @@ namespace DishAndMovie.Controllers
         /// DELETE: api/Ingredients/DeleteIngredient/1
         /// </example>
         [HttpDelete(template: "DeleteIngredient/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> DeleteIngredient(int id)
         {
             // Call the service to delete the ingredient by ID

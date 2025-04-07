@@ -78,7 +78,7 @@ namespace DishAndMovie.Controllers
         /// Body: { "MealPlanId": 1, "Name": "Diet Plan", "Date": "2025-02-02" }
         /// </example>
         [HttpPut(template: "UpdateMealPlan/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> UpdateMealPlan(int id, MealPlanDto mealPlanDto)
         {
             // Ensure the ID in the URL matches the ID in the request body
@@ -114,7 +114,7 @@ namespace DishAndMovie.Controllers
         /// Body: { "Name": "Diet Plan", "Date": "2025-02-20" }
         /// </example>
         [HttpPost(template: "AddMealPlan")]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult<MealPlan>> AddMealPlan(MealPlanDto mealPlanDto)
         {
             // Call the service to add the meal plan
@@ -143,7 +143,7 @@ namespace DishAndMovie.Controllers
         /// DELETE: api/MealPlans/DeleteMealPlan/1
         /// </example>
         [HttpDelete(template: "DeleteMealPlan/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> DeleteMealPlan(int id)
         {
             // Call the service to delete the meal plan by ID

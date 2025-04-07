@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DishAndMovie.Controllers
@@ -39,6 +40,8 @@ namespace DishAndMovie.Controllers
         }
 
         // GET: OriginPage/New
+        [HttpGet]
+        [Authorize]
         public IActionResult New()
         {
             return View(new OriginDto()); // New origin creation view
@@ -46,6 +49,7 @@ namespace DishAndMovie.Controllers
 
         // POST: OriginPage/Add
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Add(OriginDto originDto)
         {
             if (!ModelState.IsValid)
@@ -66,6 +70,8 @@ namespace DishAndMovie.Controllers
         }
 
         // GET: OriginPage/Edit/{id}
+        [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             OriginDto? originDto = await _originService.FindOrigin(id);
@@ -78,6 +84,7 @@ namespace DishAndMovie.Controllers
 
         // POST: OriginPage/Update/{id}
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Update(int id, OriginDto originDto)
         {
             if (!ModelState.IsValid)
@@ -98,6 +105,8 @@ namespace DishAndMovie.Controllers
         }
 
         // GET: OriginPage/ConfirmDelete/{id}
+        [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ConfirmDelete(int id)
         {
             OriginDto? originDto = await _originService.FindOrigin(id);
@@ -110,6 +119,7 @@ namespace DishAndMovie.Controllers
 
         // POST: OriginPage/Delete/{id}
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             ServiceResponse response = await _originService.DeleteOrigin(id);
