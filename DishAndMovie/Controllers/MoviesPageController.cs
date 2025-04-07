@@ -52,6 +52,7 @@ namespace DishAndMovie.Controllers
         // GET: MoviePage/Create
         // This action displays the form to create a new movie entry.
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             try
@@ -128,6 +129,7 @@ namespace DishAndMovie.Controllers
         // GET: MoviePage/Edit/{id}
         // This action fetches the movie entry by ID and displays it in the edit form.
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -206,6 +208,7 @@ namespace DishAndMovie.Controllers
         // GET: MoviePage/Delete/{id}
         // This action fetches a movie entry to confirm deletion.
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -230,6 +233,7 @@ namespace DishAndMovie.Controllers
         // This action deletes the movie entry from the database after confirmation.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
@@ -324,6 +328,7 @@ namespace DishAndMovie.Controllers
         // GET: MoviesPage/DeleteReview/{movieId}/{reviewId}
         // Displays the confirmation page to delete a review.
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> DeleteReview(int movieId, int reviewId)
         {
             Console.WriteLine("here");
