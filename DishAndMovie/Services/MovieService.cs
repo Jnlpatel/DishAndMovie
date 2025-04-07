@@ -59,7 +59,7 @@ namespace DishAndMovie.Services
                 OriginId = movie.OriginId,
                 GenreIds = movie.MovieGenres.Select(mg => mg.GenreID).ToList(),
                 GenreNames = movie.MovieGenres?.Select(g => g.Genre.Name).ToList(),
-                RecipesFromSameOrigin = recipes // 👈 assign recipes here
+                RecipesFromSameOrigin = recipes
 
             };
         }
@@ -262,5 +262,22 @@ namespace DishAndMovie.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<MovieDto>> GetMoviesByOriginAsync(int originId)
+        {
+            return await _context.Movies
+                .Where(m => m.OriginId == originId)
+                .Include(m => m.Origin)
+                .Select(m => new MovieDto
+                {
+                    MovieID = m.MovieID,
+                    Title = m.Title,
+                    Director = m.Director,
+                    ReleaseDate = m.ReleaseDate,
+                    PosterURL = m.PosterURL,
+                })
+                .ToListAsync();
+        }
+        
     }
 }

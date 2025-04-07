@@ -88,6 +88,37 @@
         .button.delete:hover {
             background-color: #c0392b;
         }
+
+            .button.details {
+                background-color: #2980b9;
+            }
+
+            .button.edit {
+                background-color: #27ae60;
+            }
+
+            .button.delete {
+                background-color: #e74c3c;
+            }
+
+            .button.movies {
+                background-color: #9b59b6;
+            }
+
+            .button.recipes {
+                background-color: #f39c12;
+            }
+
+            .button:hover {
+                opacity: 0.9;
+            }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
     </style>
 </head>
 <body>
@@ -115,9 +146,14 @@
                         <td>@origin.OriginId</td>
                         <td>@origin.OriginCountry</td>
                         <td>
-                            <a class="button" href="/OriginPage/Details/@origin.OriginId">Details</a>
-                            <a class="button" href="/OriginPage/Edit/@origin.OriginId">Edit</a>
-                            <a class="button delete" href="/OriginPage/ConfirmDelete/@origin.OriginId">Delete</a>
+                            <div class="button-group">
+                                <a class="button details" href="/OriginPage/Details/@origin.OriginId">Details</a>
+                                <a class="button edit" href="/OriginPage/Edit/@origin.OriginId">Edit</a>
+                                <a class="button delete" href="/OriginPage/ConfirmDelete/@origin.OriginId">Delete</a>
+                                <a class="button movies" href="/Origins/MoviesByOrigin/@origin.OriginId">View Movies</a>
+                                <a class="button recipes" href="/Origins/RecipesByOrigin/@origin.OriginId">View Recipes</a>
+                            </div>
+                           
                         </td>
                     </tr>
                 }

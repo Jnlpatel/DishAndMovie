@@ -45,9 +45,9 @@ namespace DishAndMovie.Models
         public string PosterURL { get; set; }
         public string Director { get; set; }
         public int OriginId { get; set; }
-        public List<int>? GenreIds { get; set; } // List of Genre IDs for many-to-many relation
+        public List<int>? GenreIds { get; set; } 
         public List<string>? GenreNames { get; set; }
-        public List<Recipe>? RecipesFromSameOrigin { get; set; } // 👈 Add this
+        public List<Recipe>? RecipesFromSameOrigin { get; set; } 
 
 
 

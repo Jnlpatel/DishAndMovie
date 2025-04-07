@@ -15,5 +15,8 @@ namespace DishAndMovie.Interfaces
         Task<ServiceResponse> DeleteRecipe(int id);
 
         Task<List<OriginDto>> GetOriginsAsync();  // Retrieve list of origins
+        Task<IEnumerable<RecipeDto>> GetRecipesByOriginAsync(int originId);
+
+
     }
 }

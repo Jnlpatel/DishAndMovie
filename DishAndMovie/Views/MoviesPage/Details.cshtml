@@ -64,24 +64,20 @@
     </div>
 </div>
 
+
 @if (Model.RecipesFromSameOrigin != null && Model.RecipesFromSameOrigin.Any())
 {
     <div class="container">
-        <div class="suggested-movie">
-
-            <div class="related-recipes">
-                <h3>Recipes from the same origin</h3>
-                <ul>
-                    @foreach (var recipe in Model.RecipesFromSameOrigin)
-                    {
-                        <li>
-                            <strong>@recipe.Name</strong><br />
-                        </li>
-                    }
-                </ul>
-            </div>
-
-
+        <div class="related">
+            <h2>Suggested Recipes for the Same Origin</h2>
+            <ul class="list">
+                @foreach (var movie in Model.RecipesFromSameOrigin)
+                {
+                    <li class="item">
+                        <span class="title">@movie.Name</span>
+                    </li>
+                }
+            </ul>
         </div>
     </div>
 }
@@ -192,6 +188,40 @@
 
     .button.delete:hover {
         background-color: #c0392b;
+    }
+
+    .related {
+        background-color: #f0f8ff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+        .related h2 {
+            color: #34495e;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+    .list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .item {
+        background-color: #ecf0f1;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #2c3e50;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .title {
+        display:  inline-block;
     }
 </style>
            
