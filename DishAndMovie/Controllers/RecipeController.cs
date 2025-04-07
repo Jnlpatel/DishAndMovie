@@ -67,6 +67,7 @@ namespace DishAndMovie.Controllers
         /// Body: { "RecipeId": 1, "Name": "Spaghetti Carbonara", "Origin": "Italy" }
         /// </example>
         [HttpPut("UpdateRecipe/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateRecipe(int id, RecipeDto recipeDto)
         {
             if (id != recipeDto.RecipeId)
@@ -99,6 +100,7 @@ namespace DishAndMovie.Controllers
         /// { "RecipeId": 3, "Name": "Tacos", "Origin": "Mexico" }
         /// </example>
         [HttpPost("AddRecipe")]
+        [Authorize]
         public async Task<ActionResult<RecipeDto>> AddRecipe(RecipeDto recipeDto)
         {
             ServiceResponse response = await _recipeService.AddRecipe(recipeDto);
@@ -124,6 +126,7 @@ namespace DishAndMovie.Controllers
         /// DELETE: api/Recipes/DeleteRecipe/1
         /// </example>
         [HttpDelete("DeleteRecipe/{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
             ServiceResponse response = await _recipeService.DeleteRecipe(id);

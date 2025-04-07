@@ -43,7 +43,7 @@ namespace DishAndMovie.Controllers
 
         // GET: IngredientPage/New
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public IActionResult New()
         {
             return View(new IngredientDto());
@@ -51,7 +51,7 @@ namespace DishAndMovie.Controllers
 
         // POST: IngredientPage/Add
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Add(IngredientDto ingredientDto)
         {
             if (!ModelState.IsValid)
@@ -73,7 +73,7 @@ namespace DishAndMovie.Controllers
 
         // GET: IngredientPage/Edit/{id}
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             IngredientDto? ingredientDto = await _ingredientService.FindIngredient(id);
@@ -86,7 +86,7 @@ namespace DishAndMovie.Controllers
 
         // POST: IngredientPage/Update/{id}
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Update(int id, IngredientDto ingredientDto)
         {
             if (!ModelState.IsValid)
@@ -108,7 +108,7 @@ namespace DishAndMovie.Controllers
 
         // GET: IngredientPage/ConfirmDelete/{id}
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> ConfirmDelete(int id)
         {
             IngredientDto? ingredientDto = await _ingredientService.FindIngredient(id);
@@ -121,7 +121,7 @@ namespace DishAndMovie.Controllers
 
         // POST: IngredientPage/Delete/{id}
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             ServiceResponse response = await _ingredientService.DeleteIngredient(id);

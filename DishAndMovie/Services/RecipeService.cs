@@ -58,28 +58,29 @@ namespace DishAndMovie.Services
         }
 
 
-
         // Update an existing recipe
         public async Task<ServiceResponse> UpdateRecipe(int id, RecipeDto recipeDto)
         {
             ServiceResponse serviceResponse = new();
 
-            // Find the existing recipe by ID
-            var recipe = await _context.Recipes.FindAsync(id);
-            if (recipe == null)
-            {
-                serviceResponse.Status = ServiceResponse.ServiceStatus.Error;
-                serviceResponse.Messages.Add("Recipe not found");
-                return serviceResponse;
-            }
-
-            // Update the recipe details
-            recipe.Name = recipeDto.Name;
-            recipe.OriginId = recipeDto.OriginId ?? recipe.OriginId; // Only use the OriginId for updates
-
             try
             {
+                // Find the recipe by ID
+                var recipe = await _context.Recipes.FirstOrDefaultAsync(r => r.RecipeId == id);
+                if (recipe == null)
+                {
+                    serviceResponse.Status = ServiceResponse.ServiceStatus.NotFound;
+                    serviceResponse.Messages.Add("Recipe not found.");
+                    return serviceResponse;
+                }
+
+                // Update recipe properties
+                recipe.Name = recipeDto.Name;
+                recipe.OriginId = recipeDto.OriginId;
+
+                // Save changes
                 await _context.SaveChangesAsync();
+
                 serviceResponse.Status = ServiceResponse.ServiceStatus.Updated;
             }
             catch (Exception ex)
@@ -92,35 +93,47 @@ namespace DishAndMovie.Services
         }
 
 
+
         // Add a new recipe
         public async Task<ServiceResponse> AddRecipe(RecipeDto recipeDto)
         {
-            ServiceResponse serviceResponse = new();
-
-            // Create a new Recipe entity, using only OriginId from the RecipeDto
-            var recipe = new Recipe()
-            {
-                Name = recipeDto.Name,
-                OriginId = recipeDto.OriginId ?? 0 // Only use the OriginId
-            };
-
-            // Add the new recipe to the database
-            _context.Recipes.Add(recipe);
+            var serviceResponse = new ServiceResponse();
 
             try
             {
+                // Validate input
+                if (string.IsNullOrEmpty(recipeDto.Name))
+                {
+                    serviceResponse.Status = ServiceResponse.ServiceStatus.Error;
+                    serviceResponse.Messages.Add("Recipe name is required.");
+                    return serviceResponse;
+                }
+
+                // Create and add recipe
+                var recipe = new Recipe
+                {
+                    Name = recipeDto.Name,
+                    OriginId = recipeDto.OriginId
+                };
+
+                _context.Recipes.Add(recipe);
                 await _context.SaveChangesAsync();
+
+                // Return success
                 serviceResponse.Status = ServiceResponse.ServiceStatus.Created;
                 serviceResponse.CreatedId = recipe.RecipeId;
+                serviceResponse.Messages.Add("Recipe created successfully.");
             }
             catch (Exception ex)
             {
+                // Handle error
                 serviceResponse.Status = ServiceResponse.ServiceStatus.Error;
-                serviceResponse.Messages.Add($"Error adding recipe: {ex.Message}");
+                serviceResponse.Messages.Add("An error occurred while creating the recipe: " + ex.Message);
             }
 
             return serviceResponse;
         }
+
 
 
         // Delete an existing recipe
@@ -149,6 +162,18 @@ namespace DishAndMovie.Services
             }
 
             return serviceResponse;
+        }
+
+        // Method to get all origins
+        public async Task<List<OriginDto>> GetOriginsAsync()
+        {
+            return await _context.Origins
+                .Select(o => new OriginDto
+                {
+                    OriginId = o.OriginId,
+                    OriginCountry = o.OriginCountry
+                })
+                .ToListAsync();
         }
     }
 }

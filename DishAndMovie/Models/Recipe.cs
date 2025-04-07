@@ -23,13 +23,8 @@ namespace DishAndMovie.Models
     {
         public int RecipeId { get; set; }
         public string Name { get; set; }
+        public int OriginId { get; set; }
 
-        // Only the OriginId is needed
-        public int? OriginId { get; set; }
-
-        // Include only the OriginCountry name in the RecipeDto
-        public string OriginCountry { get; set; }
-
-        public IEnumerable<OriginDto> Origin { get; set; }
     }
+
 }

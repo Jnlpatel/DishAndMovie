@@ -48,7 +48,7 @@ namespace DishAndMovie.Controllers
 
         // GET: /MealPlanPage/New
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public IActionResult New()
         {
             return View();
@@ -56,7 +56,7 @@ namespace DishAndMovie.Controllers
 
         // POST: MealPlanPage/Add
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Add(MealPlanDto mealPlanDto)
         {
             // Call your service to add the meal plan
@@ -76,7 +76,7 @@ namespace DishAndMovie.Controllers
 
         // GET: MealPlanPage/Edit/{id}
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             MealPlanDto? mealPlanDto = await _mealPlanService.FindMealPlan(id);
@@ -89,7 +89,7 @@ namespace DishAndMovie.Controllers
 
         // POST: MealPlanPage/Update/{id}
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Update(int id, MealPlanDto mealPlanDto)
         {
             if (!ModelState.IsValid)
@@ -112,7 +112,7 @@ namespace DishAndMovie.Controllers
 
         // GET MealPlanPage/ConfirmDelete/{id}
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> ConfirmDelete(int id)
         {
             MealPlanDto? mealPlanDto = await _mealPlanService.FindMealPlan(id);
@@ -128,7 +128,7 @@ namespace DishAndMovie.Controllers
 
         // POST MealPlanPage/Delete/{id}
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             ServiceResponse response = await _mealPlanService.DeleteMealPlan(id);

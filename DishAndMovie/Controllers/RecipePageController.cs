@@ -2,6 +2,7 @@
 using DishAndMovie.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DishAndMovie.Controllers
 {
@@ -43,72 +44,116 @@ namespace DishAndMovie.Controllers
 
         // GET: RecipePage/New
         [HttpGet]
-        //[Authorize]
-        public IActionResult New()
+        [Authorize]
+        public async Task<IActionResult> New()
         {
-            return View(new RecipeDto());
+            try
+            {
+                ViewBag.Origins = await _recipeService.GetOriginsAsync();
+                return View(new RecipeDto());
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError($"Error loading New form: {ex.Message}");
+                return View("Error", new ErrorViewModel { Errors = new List<string> { "Failed to load the form. " + ex.Message } });
+            }
         }
+
 
         // POST: RecipePage/Add
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Add(RecipeDto recipeDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View("New", recipeDto);
+                if (ModelState.IsValid)
+                {
+                    ServiceResponse response = await _recipeService.AddRecipe(recipeDto);
+
+                    if (response.Status == ServiceResponse.ServiceStatus.Created)
+                    {
+                        return RedirectToAction("List");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", string.Join(", ", response.Messages));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"An unexpected error occurred: {ex.Message}");
             }
 
-            ServiceResponse response = await _recipeService.AddRecipe(recipeDto);
-
-            if (response.Status == ServiceResponse.ServiceStatus.Created)
-            {
-                return RedirectToAction("List");
-            }
-            else
-            {
-                return View("Error", new ErrorViewModel() { Errors = response.Messages });
-            }
+            ViewBag.Origins = await _recipeService.GetOriginsAsync();
+            return View("New", recipeDto);
         }
 
         // GET: RecipePage/Edit/{id}
+        // This action fetches the recipe entry by ID and displays it in the edit form.
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
-            RecipeDto? recipeDto = await _recipeService.FindRecipe(id);
-            if (recipeDto == null)
+            try
             {
-                return View("Error", new ErrorViewModel() { Errors = new List<string> { "Could not find recipe" } });
+                var recipeDto = await _recipeService.FindRecipe(id);
+                if (recipeDto == null)
+                {
+                    return NotFound();
+                }
+
+                ViewBag.Origins = await _recipeService.GetOriginsAsync();
+                return View(recipeDto);
             }
-            return View(recipeDto);
+            catch (Exception ex)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Errors = new List<string> { $"An error occurred: {ex.Message}" }
+                });
+            }
         }
 
         // POST: RecipePage/Update/{id}
+        // This action updates the existing recipe entry with new data from the edit form.
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Update(int id, RecipeDto recipeDto)
         {
-            if (!ModelState.IsValid)
+
+            if (id != recipeDto.RecipeId)
             {
-                return View("Edit", recipeDto);
+                return BadRequest();
             }
 
-            ServiceResponse response = await _recipeService.UpdateRecipe(id, recipeDto);
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var response = await _recipeService.UpdateRecipe(id, recipeDto);
 
-            if (response.Status == ServiceResponse.ServiceStatus.Updated)
-            {
-                return RedirectToAction("Details", new { id });
+                    if (response.Status == ServiceResponse.ServiceStatus.Updated)
+                    {
+                        return RedirectToAction(nameof(Details), new { id });
+                    }
+
+                    ModelState.AddModelError("", "An error occurred: " + string.Join(", ", response.Messages));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return View("Error", new ErrorViewModel() { Errors = response.Messages });
+                ModelState.AddModelError("", $"An unexpected error occurred: {ex.Message}");
             }
+
+            ViewBag.Origins = await _recipeService.GetOriginsAsync();
+            return View("Edit", recipeDto);
         }
 
         // GET: RecipePage/ConfirmDelete/{id}
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> ConfirmDelete(int id)
         {
             RecipeDto? recipeDto = await _recipeService.FindRecipe(id);
@@ -121,7 +166,7 @@ namespace DishAndMovie.Controllers
 
         // POST: RecipePage/Delete/{id}
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             ServiceResponse response = await _recipeService.DeleteRecipe(id);

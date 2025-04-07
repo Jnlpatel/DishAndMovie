@@ -13,5 +13,7 @@ namespace DishAndMovie.Interfaces
         Task<ServiceResponse> AddRecipe(RecipeDto recipeDto);
 
         Task<ServiceResponse> DeleteRecipe(int id);
+
+        Task<List<OriginDto>> GetOriginsAsync();  // Retrieve list of origins
     }
 }
