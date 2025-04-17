@@ -26,6 +26,8 @@ namespace DishAndMovie.Models
         public int OriginId { get; set; }
 
         public List<Movie>? MoviesFromSameOrigin { get; set; }
+
+        public List<IngredientDto>? IngredientsUsed { get; set; }
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using DishAndMovie.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +10,13 @@ namespace DishAndMovie.Controllers
     public class RecipePageController : Controller
     {
         private readonly IRecipeService _recipeService;
+        private readonly IIngredientService _ingredientService;
 
         // Dependency injection of the recipe service
-        public RecipePageController(IRecipeService recipeService)
+        public RecipePageController(IRecipeService recipeService, IIngredientService ingredientService)
         {
             _recipeService = recipeService;
+            _ingredientService = ingredientService;
         }
 
         public IActionResult Index()
@@ -30,6 +33,7 @@ namespace DishAndMovie.Controllers
 
         // GET: RecipePage/Details/{id}
         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             RecipeDto? recipeDto = await _recipeService.FindRecipe(id);
@@ -39,8 +43,18 @@ namespace DishAndMovie.Controllers
                 return View("Error", new ErrorViewModel() { Errors = new List<string> { "Could not find recipe" } });
             }
 
+            // Ingredients used in the recipe
+            var ingredients = await _recipeService.GetIngredientsForRecipeAsync(id);
+            recipeDto.IngredientsUsed = ingredients.ToList();
+
+            // All available ingredients for dropdown
+            var allIngredients = await _ingredientService.GetAllIngredientsAsync();
+            ViewBag.AllIngredients = allIngredients;
+
             return View(recipeDto);
         }
+
+
 
         // GET: RecipePage/New
         [HttpGet]
@@ -180,5 +194,33 @@ namespace DishAndMovie.Controllers
                 return View("Error", new ErrorViewModel() { Errors = response.Messages });
             }
         }
+
+        // POST: RecipePage/AddIngredient/{recipeId}
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddIngredient(int recipeId, int ingredientId, decimal quantity)
+        {
+            var response = await _recipeService.AddIngredientToRecipeAsync(recipeId, ingredientId, quantity);
+
+            if (response.Status == ServiceResponse.ServiceStatus.Created)
+            {
+                return RedirectToAction(nameof(Details), new { id = recipeId });
+            }
+            else
+            {
+                return View("Error", new ErrorViewModel() { Errors = response.Messages });
+            }
+        }
+
+        // POST: RecipePage/RemoveIngredient
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RemoveIngredient(int recipeId, int ingredientId)
+        {
+            await _recipeService.RemoveIngredientFromRecipeAsync(recipeId, ingredientId);
+            return RedirectToAction(nameof(Details), new { id = recipeId });
+        }
+
+
     }
 }

@@ -15,5 +15,8 @@ namespace DishAndMovie.Interfaces
 
         Task<ServiceResponse> DeleteIngredient(int id);
 
+        Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync();
+
+
     }
 }
