@@ -21,6 +21,10 @@ namespace DishAndMovie.Models
         [DataType(DataType.Date)]
         [Display(Name = "Release Date")]
         public DateTime ReleaseDate { get; set; }
+
+        [Display(Name = "Poster Image")]
+        [NotMapped] 
+        public IFormFile? PosterImageFile { get; set; }
         public string PosterURL { get; set; }
         public string Director { get; set; }
 
@@ -42,7 +46,10 @@ namespace DishAndMovie.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime ReleaseDate { get; set; }
-        public string PosterURL { get; set; }
+
+        [Display(Name = "Poster Image")]
+        public IFormFile? PosterImageFile { get; set; }
+        public string? PosterURL { get; set; }
         public string Director { get; set; }
         public int OriginId { get; set; }
         public List<int>? GenreIds { get; set; } 

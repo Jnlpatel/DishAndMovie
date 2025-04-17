@@ -1,6 +1,7 @@
 ﻿using DishAndMovie.Models;
 using Microsoft.AspNetCore.Mvc;
 using DishAndMovie.Interfaces;
+using DishAndMovie.Services;
 
 namespace DishAndMovie.Controllers
 {
@@ -9,11 +10,16 @@ namespace DishAndMovie.Controllers
     public class OriginController : ControllerBase
     {
         private readonly IOriginService _originService;
+        private readonly IRecipeService _recipeService;
+        private readonly IMovieService _movieService;
 
         // Dependency Injection for IOriginService
-        public OriginController(IOriginService originService)
+        public OriginController(IOriginService originService, IRecipeService recipeService, IMovieService movieService)
         {
             _originService = originService;
+            _recipeService = recipeService;
+            _movieService = movieService;
+
         }
 
         /// <summary>
@@ -158,5 +164,33 @@ namespace DishAndMovie.Controllers
 
             return NoContent();
         }
+        // GET api/origins/{originId}/movies
+        [HttpGet("{originId}/movies")]
+        public async Task<ActionResult<IEnumerable<MovieDto>>> GetMoviesByOrigin(int originId)
+        {
+            var movies = await _movieService.GetMoviesByOriginAsync(originId);
+            var origin = await _originService.FindOrigin(originId);
+
+            return Ok(new
+            {
+                Data = movies,
+                Origin = origin?.OriginCountry ?? "Unknown Origin"
+            });
+        }
+
+        // GET api/origins/{originId}/recipes
+        [HttpGet("{originId}/recipes")]
+        public async Task<ActionResult<IEnumerable<RecipeDto>>> GetRecipesByOrigin(int originId)
+        {
+            var recipes = await _recipeService.GetRecipesByOriginAsync(originId);
+            var origin = await _originService.FindOrigin(originId);
+
+            return Ok(new
+            {
+                Data = recipes,
+                Origin = origin?.OriginCountry ?? "Unknown Origin"
+            });
+        }
     }
 }
+

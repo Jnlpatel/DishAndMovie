@@ -54,6 +54,20 @@
         }
 
         .form-group input,
+        .form-group1 .label1 {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group1 select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
@@ -98,6 +112,22 @@
             margin-bottom: 0;
         }
 
+        .image-wrapper {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger {
+            transition: all 0.2s ease;
+        }
+
+        .btn-danger:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-danger:disabled {
+            opacity: 0.7;
+        }
         .button {
             padding: 12px 20px;
             color: white;
@@ -146,7 +176,7 @@
         <h1>@ViewData["Title"]</h1>
 
         <div class="form-container">
-            <form asp-action="Edit" method="post">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="MovieID" />
 
@@ -174,10 +204,24 @@
                     <span asp-validation-for="ReleaseDate" class="text-danger"></span>
                 </div>
 
+                <div class="current-image mb-3" id="imageContainer">
+                    @if (!string.IsNullOrEmpty(Model.PosterURL))
+                    {
+                        <img src="@Model.PosterURL" alt="Current poster" style="max-height: 200px;" class="img-thumbnail" id="movieImage" />
+                        
+                        <input type="hidden" asp-for="PosterURL" id="posterUrlField" />
+                    }
+                    else
+                    {
+                        <p class="text-muted">No image uploaded</p>
+                    }
+                </div>
+
+                <!-- New Image Upload -->
                 <div class="form-group">
-                    <label asp-for="PosterURL"></label>
-                    <input asp-for="PosterURL" placeholder="Enter poster image URL" />
-                    <span asp-validation-for="PosterURL" class="text-danger"></span>
+                    <label asp-for="PosterImageFile" class="control-label"></label>
+                    <input type="file" asp-for="PosterImageFile" class="form-control" id="imageUpload" />
+                    <span asp-validation-for="PosterImageFile" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
@@ -195,7 +239,7 @@
                     <span asp-validation-for="OriginId" class="text-danger"></span>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group1">
                     <label>Genres</label>
                     @if (ViewBag.Genres != null)
                     {
@@ -232,5 +276,7 @@
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
     }
+  
+
 </body>
 </html>

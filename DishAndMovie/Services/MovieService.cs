@@ -8,10 +8,13 @@ namespace DishAndMovie.Services
     public class MovieService : IMovieService
     {
         private readonly ApplicationDbContext _context;
+        private readonly FileService _fileService;
 
-        public MovieService(ApplicationDbContext context)
+
+        public MovieService(ApplicationDbContext context, FileService fileService)
         {
             _context = context;
+            _fileService = fileService;
         }
 
         public async Task<IEnumerable<MovieDto>> ListMovies()
@@ -64,106 +67,63 @@ namespace DishAndMovie.Services
             };
         }
 
-        public async Task<ServiceResponse> AddMovie(MovieDto movieDto)
+        public async Task<ServiceResponse> AddMovie(MovieDto movieDto, IFormFile posterImage = null)
         {
             var response = new ServiceResponse();
+            Console.WriteLine($"AddMovie called with Title: {movieDto.Title}");
+            Console.WriteLine($"PosterImage: {(posterImage != null ? $"{posterImage.FileName} ({posterImage.Length} bytes)" : "null")}");
+
 
             try
             {
                 // Validate input
                 if (string.IsNullOrEmpty(movieDto.Title))
                 {
+                    Console.WriteLine("Validation failed: Title is required");
                     response.Status = ServiceResponse.ServiceStatus.Error;
                     response.Messages.Add("Movie title is required.");
                     return response;
                 }
 
-                // Step 1: Create a new Movie from the MovieDto
+                // Handle image upload
+                string posterUrl = null;
+                if (posterImage != null && posterImage.Length > 0)
+                {
+                    Console.WriteLine("Processing poster image upload");
+                    posterUrl = await _fileService.SaveImageAsync(posterImage);
+                    Console.WriteLine($"Image saved at: {posterUrl}");
+                }
+
+                // Create movie entity
                 var movie = new Movie
                 {
                     Title = movieDto.Title,
                     Description = movieDto.Description,
                     ReleaseDate = movieDto.ReleaseDate,
-                    PosterURL = movieDto.PosterURL ?? string.Empty, // Ensure not null
-                    Director = movieDto.Director ?? string.Empty,   // Ensure not null
+                    PosterURL = posterUrl ?? movieDto.PosterURL ?? string.Empty,
+                    Director = movieDto.Director ?? string.Empty,
                     OriginId = movieDto.OriginId
                 };
 
-                // Add the movie to the database
+                Console.WriteLine("Adding movie to context");
                 _context.Movies.Add(movie);
-                await _context.SaveChangesAsync();
 
-                // Step 2: Add the MovieGenres entries to the database
+                Console.WriteLine("Saving changes to database");
+                await _context.SaveChangesAsync();
+                Console.WriteLine($"Movie saved with ID: {movie.MovieID}");
+
+                // Handle genres
                 if (movieDto.GenreIds != null && movieDto.GenreIds.Any())
                 {
-                    // Ensure each genre exists before adding the relationship
+                    Console.WriteLine($"Processing {movieDto.GenreIds.Count} genres");
                     var existingGenreIds = await _context.Genres
                         .Where(g => movieDto.GenreIds.Contains(g.GenreID))
                         .Select(g => g.GenreID)
                         .ToListAsync();
 
+                    Console.WriteLine($"Found {existingGenreIds.Count} existing genres");
+
                     foreach (var genreId in existingGenreIds)
-                    {
-                        var movieGenre = new MovieGenre
-                        {
-                            MovieID = movie.MovieID,
-                            GenreID = genreId
-                        };
-                        _context.MovieGenres.Add(movieGenre);
-                    }
-
-                    await _context.SaveChangesAsync();
-                }
-
-                // Step 3: Return a response indicating that the movie was created
-                response.Status = ServiceResponse.ServiceStatus.Created;
-                response.CreatedId = movie.MovieID;
-                response.Messages.Add("Movie created successfully.");
-
-            }
-            catch (Exception ex)
-            {
-                // Handle error and return the error message
-                response.Status = ServiceResponse.ServiceStatus.Error;
-                response.Messages.Add("An error occurred while creating the movie: " + ex.Message);
-            }
-
-            return response;
-        }
-
-        public async Task<ServiceResponse> UpdateMovie(int id, MovieDto movieDto)
-        {
-            var response = new ServiceResponse();
-
-            try
-            {
-                var movie = await _context.Movies
-                                          .Include(m => m.MovieGenres) // Include MovieGenres for updating genres
-                                          .FirstOrDefaultAsync(m => m.MovieID == id);
-
-                if (movie == null)
-                {
-                    response.Status = ServiceResponse.ServiceStatus.NotFound;
-                    response.Messages.Add("Movie not found.");
-                    return response;
-                }
-
-                // Update movie properties
-                movie.Title = movieDto.Title;
-                movie.Description = movieDto.Description;
-                movie.ReleaseDate = movieDto.ReleaseDate;
-                movie.PosterURL = movieDto.PosterURL;
-                movie.Director = movieDto.Director;
-                movie.OriginId = movieDto.OriginId;
-
-                // Update movie genres
-                if (movieDto.GenreIds != null)
-                {
-                    // Remove existing genres from MovieGenre table
-                    _context.MovieGenres.RemoveRange(movie.MovieGenres);
-
-                    // Add new genres
-                    foreach (var genreId in movieDto.GenreIds)
                     {
                         _context.MovieGenres.Add(new MovieGenre
                         {
@@ -171,22 +131,122 @@ namespace DishAndMovie.Services
                             GenreID = genreId
                         });
                     }
+
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("Genres saved successfully");
                 }
 
-                // Save changes
-                await _context.SaveChangesAsync();
-
-                response.Status = ServiceResponse.ServiceStatus.Updated;
+                response.Status = ServiceResponse.ServiceStatus.Created;
+                response.CreatedId = movie.MovieID;
+                response.Messages.Add("Movie created successfully.");
+                Console.WriteLine("Movie creation completed successfully");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Exception in AddMovie: {ex.ToString()}");
                 response.Status = ServiceResponse.ServiceStatus.Error;
-                response.Messages.Add($"Error updating movie: {ex.Message}");
+                response.Messages.Add("An error occurred while creating the movie: " + ex.Message);
             }
 
             return response;
         }
 
+        public async Task<ServiceResponse> UpdateMovie(
+    int id,
+    MovieDto movieDto,
+    IFormFile posterImage = null,
+    bool removeImage = false)
+        {
+            var response = new ServiceResponse();
+
+            Console.WriteLine($"Updating movie ID: {id}");
+            Console.WriteLine($"New image: {posterImage?.FileName ?? "null"}, Remove: {removeImage}");
+
+            try
+            {
+                var movie = await _context.Movies
+                    .Include(m => m.MovieGenres)
+                    .FirstOrDefaultAsync(m => m.MovieID == id);
+
+                if (movie == null)
+                {
+                    response.Status = ServiceResponse.ServiceStatus.NotFound;
+                    response.Messages.Add("Movie not found");
+                    return response;
+                }
+
+                // Handle image updates
+                if (removeImage && !string.IsNullOrEmpty(movie.PosterURL))
+                {
+                    Console.WriteLine($"Removing existing image: {movie.PosterURL}");
+                    _fileService.DeleteImage(movie.PosterURL);
+                    movie.PosterURL = null;
+                }
+                else if (posterImage != null && posterImage.Length > 0)
+                {
+                    Console.WriteLine("Uploading new image");
+                    // Delete old image if exists
+                    if (!string.IsNullOrEmpty(movie.PosterURL))
+                    {
+                        _fileService.DeleteImage(movie.PosterURL);
+                    }
+
+                    // Save new image
+                    movie.PosterURL = await _fileService.SaveImageAsync(posterImage);
+                    Console.WriteLine($"New image path: {movie.PosterURL}");
+                }
+
+                // Update other properties
+                movie.Title = movieDto.Title;
+                movie.Description = movieDto.Description;
+                movie.ReleaseDate = movieDto.ReleaseDate;
+                movie.Director = movieDto.Director;
+                movie.OriginId = movieDto.OriginId;
+
+                // Update genres
+                if (movieDto.GenreIds != null)
+                {
+                    Console.WriteLine("Updating genres...");
+
+                    // Remove existing genres
+                    var existingGenres = movie.MovieGenres.ToList();
+                    _context.MovieGenres.RemoveRange(existingGenres);
+
+                    // Add new genres
+                    foreach (var genreId in movieDto.GenreIds)
+                    {
+                        if (await _context.Genres.AnyAsync(g => g.GenreID == genreId))
+                        {
+                            _context.MovieGenres.Add(new MovieGenre
+                            {
+                                MovieID = id,
+                                GenreID = genreId
+                            });
+                        }
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                Console.WriteLine("Movie updated successfully");
+
+                response.Status = ServiceResponse.ServiceStatus.Updated;
+                response.Messages.Add("Movie updated successfully");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                Console.WriteLine($"Database error: {dbEx.InnerException?.Message ?? dbEx.Message}");
+                response.Status = ServiceResponse.ServiceStatus.Error;
+                response.Messages.Add("Database error occurred");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"General error: {ex}");
+                response.Status = ServiceResponse.ServiceStatus.Error;
+                response.Messages.Add("An unexpected error occurred");
+            }
+
+            return response;
+        }
 
         public async Task<ServiceResponse> DeleteMovie(int id)
         {

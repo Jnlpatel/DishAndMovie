@@ -64,9 +64,9 @@ namespace DishAndMovie.Controllers.Api
         /// </example>
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddMovie([FromBody] MovieDto movieDto)
+        public async Task<ActionResult<ServiceResponse>> AddMovie([FromForm] MovieDto movieDto, [FromForm] IFormFile posterImage)
         {
-            var response = await _movieService.AddMovie(movieDto);
+            var response = await _movieService.AddMovie(movieDto, posterImage);
             if (response.Status == ServiceResponse.ServiceStatus.Error)
             {
                 return BadRequest(response.Messages);
@@ -86,14 +86,14 @@ namespace DishAndMovie.Controllers.Api
         /// </example>
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> UpdateMovie(int id, [FromBody] MovieDto movieDto)
+        public async Task<IActionResult> UpdateMovie(int id, [FromForm] MovieDto movieDto, [FromForm] IFormFile posterImage)
         {
             if (id != movieDto.MovieID)
             {
                 return BadRequest("Movie ID mismatch.");
             }
 
-            var response = await _movieService.UpdateMovie(id, movieDto);
+            var response = await _movieService.UpdateMovie(id, movieDto, posterImage);
             if (response.Status == ServiceResponse.ServiceStatus.Error)
             {
                 return NotFound(response.Messages);

@@ -80,51 +80,55 @@ namespace DishAndMovie.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Create(MovieDto movieDto)
+        public async Task<IActionResult> Create(
+                                    [Bind("MovieID,Title,Description,ReleaseDate,Director,OriginId,GenreIds")]
+                                    MovieDto movieDto,
+                                    IFormFile PosterImageFile) 
         {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    // Log the incoming data for debugging
-                    _logger.LogInformation($"Received movie submission: Title={movieDto.Title}, GenreCount={movieDto.GenreIds?.Count ?? 0}");
 
-                    var response = await _movieService.AddMovie(movieDto);
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    var response = await _movieService.AddMovie(movieDto, PosterImageFile);
+
+                    Console.WriteLine($"Service Response Status: {response.Status}");
 
                     if (response.Status == ServiceResponse.ServiceStatus.Created)
                     {
-                        _logger.LogInformation($"Movie created successfully with ID: {response.CreatedId}");
-
                         return RedirectToAction(nameof(Index));
                     }
-                    else
+
+                    foreach (var error in response.Messages)
                     {
-                        _logger.LogWarning($"Movie creation failed: {string.Join(", ", response.Messages)}");
-                        ModelState.AddModelError("", "An error occurred while creating the movie: " + string.Join(", ", response.Messages));
+                        ModelState.AddModelError("", error);
+                        Console.WriteLine($"Service Error: {error}");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Log validation errors
-                    var errors = ModelState.Values
-                        .SelectMany(v => v.Errors)
-                        .Select(e => e.ErrorMessage);
-                    _logger.LogWarning($"Model validation failed: {string.Join(", ", errors)}");
+                    Console.WriteLine($"Exception: {ex}");
+                    ModelState.AddModelError("", "An error occurred while saving.");
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError($"Exception during movie creation: {ex.Message}");
-                ModelState.AddModelError("", $"An unexpected error occurred: {ex.Message}");
+                Console.WriteLine("ModelState Errors:");
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        Console.WriteLine($"{entry.Key}: {error.ErrorMessage}");
+                    }
+                }
             }
 
-            // If the model is invalid or there was an error, return the form with current data
-            // Load genres and origins for dropdown lists in the view again
+            // Repopulate dropdowns
             ViewBag.Genres = await _movieService.GetGenresAsync();
             ViewBag.Origins = await _movieService.GetOriginsAsync();
             return View(movieDto);
         }
-
 
         // GET: MoviePage/Edit/{id}
         // This action fetches the movie entry by ID and displays it in the edit form.
@@ -161,45 +165,63 @@ namespace DishAndMovie.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Edit(int id, MovieDto movieDto)
+
+        public async Task<IActionResult> Edit(int id,
+    [Bind("MovieID,Title,Description,ReleaseDate,Director,OriginId,GenreIds")]
+    MovieDto movieDto,
+    IFormFile PosterImageFile,
+    bool removeImage = false)
         {
+            Console.WriteLine($"Starting Edit for ID: {id}");
+
             if (id != movieDto.MovieID)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                try
                 {
-                    _logger.LogInformation($"Updating movie ID {id}: Title={movieDto.Title}");
+                    Console.WriteLine($"PosterImageFile: {PosterImageFile?.FileName ?? "null"}");
+                    Console.WriteLine($"Remove Image: {removeImage}");
 
-                    var response = await _movieService.UpdateMovie(id, movieDto);
+                    var response = await _movieService.UpdateMovie(
+                        id,
+                        movieDto,
+                        PosterImageFile,
+                        removeImage);
 
                     if (response.Status == ServiceResponse.ServiceStatus.Updated)
                     {
-                        _logger.LogInformation($"Movie ID {id} updated successfully.");
                         return RedirectToAction(nameof(Index));
                     }
-                    else
+
+                    foreach (var error in response.Messages)
                     {
-                        _logger.LogWarning($"Movie update failed: {string.Join(", ", response.Messages)}");
-                        ModelState.AddModelError("", "An error occurred while updating the movie: " + string.Join(", ", response.Messages));
+                        ModelState.AddModelError("", error);
+                        Console.WriteLine($"Error: {error}");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                    _logger.LogWarning($"Validation failed for movie ID {id}: {string.Join(", ", errors)}");
+                    Console.WriteLine($"Exception: {ex}");
+                    ModelState.AddModelError("", "An error occurred while saving.");
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError($"Exception during movie update: {ex.Message}");
-                ModelState.AddModelError("", $"An unexpected error occurred: {ex.Message}");
+                Console.WriteLine("ModelState Errors:");
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        Console.WriteLine($"{entry.Key}: {error.ErrorMessage}");
+                    }
+                }
             }
 
-            // Reload genres and origins in case of error
+            // Repopulate dropdowns if we need to return the view
             ViewBag.Genres = await _movieService.GetGenresAsync();
             ViewBag.Origins = await _movieService.GetOriginsAsync();
             return View(movieDto);

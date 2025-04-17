@@ -8,8 +8,8 @@ namespace DishAndMovie.Interfaces
         Task<Movie> CreateMovieAsync(Movie movie);
         Task AddMovieGenresAsync(int movieId, List<int> genreIds);
         Task<MovieDto?> FindMovie(int id);
-        Task<ServiceResponse> UpdateMovie(int id, MovieDto movieDto);
-        Task<ServiceResponse> AddMovie(MovieDto movieDto);
+        Task<ServiceResponse> UpdateMovie(int id, MovieDto movieDto, IFormFile posterImage = null, bool removeImage = false);
+        Task<ServiceResponse> AddMovie(MovieDto movieDto, IFormFile posterImage);
         Task<ServiceResponse> DeleteMovie(int id);
         Task<List<GenreDto>> GetGenresAsync();  // Retrieve list of genres
         Task<List<OriginDto>> GetOriginsAsync();  // Retrieve list of origins

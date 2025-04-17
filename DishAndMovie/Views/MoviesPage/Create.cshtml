@@ -98,7 +98,7 @@
         <h1>Add New Movie</h1>
 
         <div class="form-container">
-            <form asp-action="Create">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="form-group">
@@ -118,10 +118,11 @@
                     <input asp-for="ReleaseDate" class="form-control" type="date" value="@Model.ReleaseDate.ToString("dd-MM-yyyy")" />
                     <span asp-validation-for="ReleaseDate" class="text-danger"></span>
                 </div>
+               
                 <div class="form-group">
-                    <label asp-for="PosterURL" class="control-label"></label>
-                    <input asp-for="PosterURL" class="form-control" />
-                    <span asp-validation-for="PosterURL" class="text-danger"></span>
+                    <label asp-for="PosterImageFile" class="control-label"></label>
+                    <input type="file" asp-for="PosterImageFile" class="form-control" />
+                    <span asp-validation-for="PosterImageFile" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
