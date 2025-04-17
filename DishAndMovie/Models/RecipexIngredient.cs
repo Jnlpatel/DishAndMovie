@@ -19,4 +19,5 @@ namespace DishAndMovie.Models
         public string Unit { get; set; } // Measurement unit (e.g., grams, cups)
 
     }
+
 }

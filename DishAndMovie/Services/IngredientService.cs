@@ -145,6 +145,18 @@ namespace DishAndMovie.Services
             return response;
         }
 
+        public async Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync()
+        {
+            return await _context.Ingredients
+                .Select(i => new IngredientDto
+                {
+                    IngredientId = i.IngredientId,
+                    Name = i.Name,
+                    Unit = i.Unit,
+                    CaloriesPerUnit = i.CaloriesPerUnit
+                })
+                .ToListAsync();
+        }
 
 
     }

@@ -193,5 +193,94 @@ namespace DishAndMovie.Services
                 })
                 .ToListAsync();
         }
+
+
+        // Get all ingredients for a given recipe
+        public async Task<IEnumerable<IngredientDto>> GetIngredientsForRecipeAsync(int recipeId)
+        {
+            var ingredients = await _context.RecipesXIngredients
+                .Where(ri => ri.RecipeId == recipeId)
+                .Join(_context.Ingredients,
+                      ri => ri.IngredientId,
+                      ing => ing.IngredientId,
+                      (ri, ing) => new IngredientDto
+                      {
+                          IngredientId = ing.IngredientId,
+                          Name = ing.Name,
+                          Unit = ri.Unit,
+                          CaloriesPerUnit = ing.CaloriesPerUnit,
+                          Quantity = ri.Quantity
+                      })
+                .ToListAsync();
+
+            return ingredients;
+        }
+
+
+        // Add a new ingredient to a recipe
+        public async Task<ServiceResponse> AddIngredientToRecipeAsync(int recipeId, int ingredientId, decimal quantity)
+        {
+            var serviceResponse = new ServiceResponse();
+
+            try
+            {
+                var recipe = await _context.Recipes.FindAsync(recipeId);
+                var ingredient = await _context.Ingredients.FindAsync(ingredientId);
+
+                // Check if the combination already exists
+                var existing = await _context.RecipesXIngredients
+                    .FirstOrDefaultAsync(r => r.RecipeId == recipeId && r.IngredientId == ingredientId);
+
+                if (existing != null)
+                {
+                    serviceResponse.Status = ServiceResponse.ServiceStatus.Error;
+                    serviceResponse.Messages.Add("Ingredient already exists in the recipe.");
+                    return serviceResponse;
+                }
+
+                var recipexIngredient = new RecipexIngredient
+                {
+                    RecipeId = recipeId,
+                    IngredientId = ingredientId,
+                    Quantity = quantity,
+                    Unit = ingredient.Unit // Assuming unit is stored in Ingredient
+                };
+
+                _context.RecipesXIngredients.Add(recipexIngredient);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Status = ServiceResponse.ServiceStatus.Created;
+                serviceResponse.Messages.Add("Ingredient added to recipe successfully.");
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Status = ServiceResponse.ServiceStatus.Error;
+                serviceResponse.Messages.Add($"Error adding ingredient: {ex.Message}");
+            }
+
+            return serviceResponse;
+        }
+
+
+        // Remove an ingredient from a recipe
+        public async Task<ServiceResponse> RemoveIngredientFromRecipeAsync(int recipeId, int ingredientId)
+        {
+            var recipeIngredient = await _context.RecipesXIngredients
+                .FirstOrDefaultAsync(r => r.RecipeId == recipeId && r.IngredientId == ingredientId);
+
+            if (recipeIngredient != null)
+            {
+                _context.RecipesXIngredients.Remove(recipeIngredient);
+                await _context.SaveChangesAsync();
+            }
+
+            return new ServiceResponse
+            {
+                Status = ServiceResponse.ServiceStatus.Deleted,
+                Messages = new List<string> { "Ingredient removed successfully." }
+            };
+        }
+
+
     }
 }

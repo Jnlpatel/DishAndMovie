@@ -14,7 +14,7 @@
 
         .container {
             max-width: 600px;
-            margin: auto;
+            margin-bottom: 20px;
             background: white;
             padding: 20px;
             border-radius: 8px;
@@ -103,6 +103,100 @@
             display: inline-block;
         }
 
+        .ingredient-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .ingredient-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .ingredient-details {
+            display: flex;
+            flex-direction: column;
+            margin-right: auto;
+            flex: 1;
+        }
+
+        .ingredient-quantity {
+            font-size: 14px;
+            color: #2980b9;
+        }
+
+        .ingredient-calories {
+            font-size: 12px;
+            color: #8e44ad;
+            font-style: italic;
+        }
+
+        .remove-button {
+            text-align: right;
+            margin-left: 20px;
+        }
+
+            .remove-button:hover {
+                background-color: #c0392b;
+            }
+
+        .confirmation {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 5px;
+            margin-top: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+        }
+
+            .confirmation .button {
+                margin-top: 5px;
+                padding: 4px 6px;
+                font-size: 14px;
+            }
+
+                .confirmation .button:hover {
+                    background-color: #c82333;
+                    color: white;
+                }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            background-color: #ecf0f1;
+        }
+
+            select:focus, input:focus {
+                border-color: #2980b9;
+                outline: none;
+            }
+
     </style>
 </head>
 <body>
@@ -139,6 +233,93 @@
             </div>
         </div>
     }
+
+    @if (Model.IngredientsUsed != null)
+    {
+        <div class="container">
+            <div class="related">
+                <h2>Ingredients in This Recipe</h2>
+                <ul class="list">
+                    @foreach (var ingredient in Model.IngredientsUsed)
+                    {
+                        <li class="item">
+                            <div class="ingredient-info">
+                                <div class="ingredient-name">
+                                    <strong>@ingredient.Name</strong>
+                                </div>
+                                <div class="ingredient-details">
+                                    <span class="ingredient-quantity">
+                                        <strong>@ingredient.Quantity @ingredient.Unit</strong>
+                                    </span>
+                                    <span class="ingredient-calories">
+                                        (@ingredient.CaloriesPerUnit cal per unit)
+                                    </span>
+                                </div>
+                                
+                                <button class="button delete remove-button" onclick="showConfirmation(@ingredient.IngredientId)">Remove</button>
+
+                                <div id="confirmation-@ingredient.IngredientId" class="confirmation">
+                                    <p>Are you sure?</p>
+                                    <button class="button" onclick="removeIngredient(@ingredient.IngredientId)">Yes</button>
+                                    <button class="button" onclick="hideConfirmation(@ingredient.IngredientId)">No</button>
+                                </div>
+
+                                <form id="remove-form-@ingredient.IngredientId" method="post" asp-action="RemoveIngredient" asp-controller="RecipePage" style="display:none;">
+                                    <input type="hidden" name="recipeId" value="@Model.RecipeId" />
+                                    <input type="hidden" name="ingredientId" value="@ingredient.IngredientId" />
+                                </form>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    <script>
+        function showConfirmation(ingredientId) {
+            document.getElementById("confirmation-" + ingredientId).style.display = "block";
+        }
+
+        function hideConfirmation(ingredientId) {
+            document.getElementById("confirmation-" + ingredientId).style.display = "none";
+        }
+
+        function removeIngredient(ingredientId) {
+            var form = document.getElementById("remove-form-" + ingredientId);
+
+            form.submit();
+        }
+    </script>
+
+
+    <div class="container">
+        <div class="related">
+            <h2>Add Ingredient to Recipe</h2>
+            <form method="post" action="/RecipePage/AddIngredient">
+                <input type="hidden" name="RecipeId" value="@Model.RecipeId" />
+
+                <div class="form-group">
+                    <label for="IngredientId">Ingredient:</label>
+                    <select name="IngredientId" required>
+                        <option disabled selected value="">-- Select Ingredient --</option>
+                        @foreach (var ingredient in ViewBag.AllIngredients as List<DishAndMovie.Models.IngredientDto>)
+                        {
+                            <option value="@ingredient.IngredientId">@ingredient.Name (@ingredient.Unit)</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="Quantity">Quantity:</label>
+                    <input type="number" name="Quantity" step="0.01" min="0" required />
+                </div>
+
+                <button type="submit" class="button">Add Ingredient</button>
+            </form>
+        </div>
+    </div>
+
 
 </body>
 </html>
