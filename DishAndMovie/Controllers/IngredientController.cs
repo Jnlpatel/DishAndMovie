@@ -19,22 +19,25 @@ namespace DishAndMovie.Controllers
         }
 
         /// <summary>
-        /// Returns a list of all ingredients.
+        /// Returns a list of ingredients with pagination.
         /// </summary>
-        /// <returns>A list of ingredient DTO objects.</returns>
+        /// <param name="skip">The number of records to skip (for paging).</param>
+        /// <param name="perpage">The number of records to return per page.</param>
+        /// <returns>A paginated list of ingredient DTO objects.</returns>
         /// <example>
-        /// GET: api/Ingredients/ListIngredients ->
+        /// GET: api/Ingredients/ListIngredients?skip=0&perpage=3 -> 
         /// [
         ///  {"IngredientId":1, "Name":"Chicken Breast", "Unit":"grams", "CaloriesPerUnit":165},
         ///  {"IngredientId":2, "Name":"Avocado", "Unit":"grams", "CaloriesPerUnit":160}
         /// ]
         /// </example>
-        [HttpGet(template: "ListIngredients")]
-        public async Task<ActionResult<IEnumerable<IngredientDto>>> ListIngredients()
+        [HttpGet("ListIngredients")]
+        public async Task<ActionResult<IEnumerable<IngredientDto>>> ListIngredients(int skip = 0, int perpage = 10)
         {
-            // empty list of data transfer object IngredientDto
-            IEnumerable<IngredientDto> ingredientDtos = await _ingredientService.ListIngredients();
-            // return 200 OK with IngredientDto
+            // Fetch the list of ingredients with pagination
+            IEnumerable<IngredientDto> ingredientDtos = await _ingredientService.ListIngredients(skip, perpage);
+
+            // Return the paginated list with a 200 OK response
             return Ok(ingredientDtos);
         }
 

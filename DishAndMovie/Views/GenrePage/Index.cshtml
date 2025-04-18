@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DishAndMovie.Models.GenreDto>
+﻿@model DishAndMovie.Models.ViewModels.GenreList
 
 <!DOCTYPE html>
 <html lang="en">
@@ -78,7 +78,6 @@
 
             .button:hover {
                 background-color: #1c6391;
-                color: white;
             }
 
             .button.delete {
@@ -88,6 +87,33 @@
                 .button.delete:hover {
                     background-color: #c0392b;
                 }
+
+            .pagination {
+                text-align: center;
+                margin-top: 30px;
+            }
+
+            .pagination a, .pagination span {
+                display: inline-block;
+                margin: 0 5px;
+                padding: 8px 12px;
+                background-color: #2980b9;
+                color: white;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+
+            .pagination a:hover {
+                background-color: #1c6391;
+            }
+
+            .pagination span {
+                background-color: #34495e;
+            }
+
+
     </style>
 </head>
 <body>
@@ -109,7 +135,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var genre in Model)
+                @foreach (var genre in Model.Genres)
                 {
                     <tr>
                         <td>@genre.GenreID</td>
@@ -123,6 +149,26 @@
                 }
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        @if (Model.MaxPage > 0)
+        {
+            <div class="pagination">
+                @if (Model.Page > 0)
+                {
+                    <a href="/GenrePage/List?PageNum=@(Model.Page - 1)">&laquo; Prev</a>
+                }
+
+                <span>Page @(Model.Page + 1) of @(Model.MaxPage + 1)</span>
+
+                @if (Model.Page < Model.MaxPage)
+                {
+                    <a href="/GenrePage/List?PageNum=@(Model.Page + 1)">Next &raquo;</a>
+                }
+            </div>
+        }
+
+
     </div>
 
 </body>

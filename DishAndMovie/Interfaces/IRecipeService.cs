@@ -4,7 +4,7 @@ namespace DishAndMovie.Interfaces
 {
     public interface IRecipeService
     {
-        Task<IEnumerable<RecipeDto>> ListRecipes();
+        Task<IEnumerable<RecipeDto>> ListRecipes(int skip, int perpage);
 
         Task<RecipeDto?> FindRecipe(int id);
 
@@ -21,5 +21,10 @@ namespace DishAndMovie.Interfaces
         Task<IEnumerable<IngredientDto>> GetIngredientsForRecipeAsync(int recipeId);
         Task<ServiceResponse> AddIngredientToRecipeAsync(int recipeId, int ingredientId, decimal quantity);
         Task<ServiceResponse> RemoveIngredientFromRecipeAsync(int recipeId, int ingredientId);
+
+        Task<int> CountRecipes();
+
     }
+
+
 }

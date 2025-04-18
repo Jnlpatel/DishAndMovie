@@ -15,15 +15,16 @@ namespace DishAndMovie.Services
             _context = context;
         }
 
-        // List all recipes with their associated origin details
-        public async Task<IEnumerable<RecipeDto>> ListRecipes()
+        public async Task<IEnumerable<RecipeDto>> ListRecipes(int skip, int perpage)
         {
-            // Fetch recipes and include the associated origin data
             var recipes = await _context.Recipes
-                                        .Include(r => r.Origin) // Including Origin in the result
-                                        .ToListAsync();
+                .Include(r => r.Origin) // Include the associated Origin data
+                .OrderBy(r => r.RecipeId)
+                .Skip(skip)  // Skip the records based on page number
+                .Take(perpage) // Take the number of records based on perpage
+                .ToListAsync();
 
-            // Convert to RecipeDto including both OriginId and OriginCountry
+            // Map to RecipeDto including OriginId and OriginCountry
             var recipeDtos = recipes.Select(r => new RecipeDto()
             {
                 RecipeId = r.RecipeId,
@@ -32,6 +33,11 @@ namespace DishAndMovie.Services
             }).ToList();
 
             return recipeDtos;
+        }
+
+        public async Task<int> CountRecipes()
+        {
+            return await _context.Recipes.CountAsync();
         }
 
 

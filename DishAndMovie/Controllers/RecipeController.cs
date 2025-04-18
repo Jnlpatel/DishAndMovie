@@ -18,22 +18,28 @@ namespace DishAndMovie.Controllers
         }
 
         /// <summary>
-        /// Returns a list of all recipes.
+        /// Returns a list of Recipes. Pageable with optional parameters skip and perpage
         /// </summary>
-        /// <returns>A list of recipe DTO objects.</returns>
+        /// <param name="skip">The number of records to skip, ordered by ID ascending</param>
+        /// <param name="perpage">The number of records to get</param>
+        /// <returns>
+        /// 200 OK
+        /// [{RecipeDto},{RecipeDto},..]
+        /// </returns>
         /// <example>
-        /// GET: api/Recipes/ListRecipes ->
-        /// [
-        ///  {"RecipeId":1, "Name":"Spaghetti Bolognese", "Origin":"Italy"},
-        ///  {"RecipeId":2, "Name":"Sushi", "Origin":"Japan"}
-        /// ]
+        /// GET: api/Recipes/ListRecipes -> [{RecipeDto},{RecipeDto},..]
+        /// GET: api/Recipes/ListRecipes?skip=0&perpage=10 -> [{RecipeDto},{RecipeDto},..+8]
         /// </example>
         [HttpGet("ListRecipes")]
-        public async Task<ActionResult<IEnumerable<RecipeDto>>> ListRecipes()
+        public async Task<ActionResult<IEnumerable<RecipeDto>>> ListRecipes(int? skip, int? perpage)
         {
-            IEnumerable<RecipeDto> recipeDtos = await _recipeService.ListRecipes();
+            if (skip == null) skip = 0;
+            if (perpage == null) perpage = await _recipeService.CountRecipes();
+
+            IEnumerable<RecipeDto> recipeDtos = await _recipeService.ListRecipes((int)skip, (int)perpage);
             return Ok(recipeDtos);
         }
+
 
         /// <summary>
         /// Returns a single recipe by ID.

@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using DishAndMovie.Models.ViewModels;
 using DishAndMovie.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,12 +29,40 @@ namespace DishAndMovie.Controllers
             return RedirectToAction("List");
         }
 
+        // GET: OriginPage/List?PageNum={pagenum}
         // GET: OriginPage/List
-        public async Task<IActionResult> List()
+        [HttpGet]
+        public async Task<IActionResult> List(int PageNum = 0)
         {
-            IEnumerable<OriginDto?> originDtos = await _originService.ListOrigins();
-            return View(originDtos); // Returning list of origins to view
+            int PerPage = 3; // Set the number of origins per page
+
+            // Get the total count of origins
+            int totalCount = await _originService.CountOrigins();
+
+            // Calculate the maximum page number
+            int MaxPage = (int)Math.Ceiling((decimal)totalCount / PerPage) - 1;
+
+            // Ensure boundaries are respected
+            if (MaxPage < 0) MaxPage = 0;
+            if (PageNum < 0) PageNum = 0;
+            if (PageNum > MaxPage) PageNum = MaxPage;
+
+            int StartIndex = PageNum * PerPage;
+
+            // Fetch the paginated origins
+            IEnumerable<OriginDto?> originDtos = await _originService.ListOrigins(StartIndex, PerPage);
+
+            // Create a ViewModel to hold the list and pagination info
+            OriginList viewModel = new OriginList
+            {
+                Origins = originDtos,
+                Page = PageNum,
+                MaxPage = MaxPage
+            };
+
+            return View(viewModel);
         }
+
 
         // GET: OriginPage/Details/{id}
         public async Task<IActionResult> Details(int id)

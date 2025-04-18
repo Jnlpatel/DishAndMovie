@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using DishAndMovie.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,17 +15,47 @@ namespace DishAndMovie.Controllers
             _genreService = genreService;
         }
 
-        // GET: GenrePage
-        // This action handles the request for displaying the list of genres on the genre page.
-        // It retrieves all genres from the database and passes them to the view for rendering.
-        public async Task<IActionResult> Index()
+        // Redirecting to List action when the Index is hit
+        public IActionResult Index()
         {
-            // Fetching the list of genres
-            var genres = await _genreService.ListGenres();
-
-            // Returning the genres to the view
-            return View(genres);
+            return RedirectToAction("List");
         }
+
+        // GET: GenrePage/List?PageNum={pagenum}
+        // GET: GenrePage/List
+        [HttpGet]
+        public async Task<IActionResult> List(int PageNum = 0)
+        {
+            int PerPage = 3; // Number of genres per page
+
+            // Get the total count of genres
+            int totalCount = await _genreService.CountGenres();
+
+            // Calculate the maximum page number
+            int MaxPage = (int)Math.Ceiling((decimal)totalCount / PerPage) - 1;
+
+            // Ensure boundaries are respected
+            if (MaxPage < 0) MaxPage = 0;
+            if (PageNum < 0) PageNum = 0;
+            if (PageNum > MaxPage) PageNum = MaxPage;
+
+            int StartIndex = PageNum * PerPage;
+
+            // Fetch the paginated genres
+            IEnumerable<GenreDto?> genreDtos = await _genreService.ListGenres(StartIndex, PerPage);
+
+            // Create a ViewModel to hold the list and pagination info
+            GenreList viewModel = new GenreList
+            {
+                Genres = genreDtos,
+                Page = PageNum,
+                MaxPage = MaxPage
+            };
+
+            return View("Index", viewModel);
+        }
+
+
 
         // GET: GenrePage/Details/5
         // This action handles requests to view the details of a specific genre.
