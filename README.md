@@ -31,6 +31,16 @@ DishAndMovie is a unique application that connects recipes and movies by their c
 
 ---
 
+## Additional Features
+
+### ✨ Additional Features Implemented
+
+- **Pagination** for list views in **Genres** and **Movies** implemented by [`Digna 👩‍🍳`].
+- **Weather API Integration** using **C# HttpClient** to fetch real-time weather data, implemented by [`Jinalkumari 🎥`].
+- **Custom HTML/CSS Styling** for improved user interface and responsive design.[`Digna 👩‍🍳`]
+
+---
+
 ## Database Relationships
 
 ### One-to-Many
@@ -52,6 +62,7 @@ DishAndMovie is a unique application that connects recipes and movies by their c
 - *Tools*: Swagger, Postman, Git
 
 ---
+
 
 ## GitHub Repository
 
