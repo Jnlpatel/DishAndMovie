@@ -14,13 +14,15 @@ namespace DishAndMovie.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<MealPlanDto>> ListMealPlans()
+        public async Task<IEnumerable<MealPlanDto>> ListMealPlans(int skip, int perpage)
         {
-            // Fetch meal plans from the database
-            List<MealPlan> mealPlans = await _context.MealPlans.ToListAsync();
+            var mealPlans = await _context.MealPlans
+                .OrderBy(mp => mp.MealPlanId)
+                .Skip(skip)
+                .Take(perpage)
+                .ToListAsync();
 
-            // Convert to MealPlanDto
-            List<MealPlanDto> mealPlanDtos = mealPlans.Select(mp => new MealPlanDto()
+            var mealPlanDtos = mealPlans.Select(mp => new MealPlanDto()
             {
                 MealPlanId = mp.MealPlanId,
                 Name = mp.Name,
@@ -29,6 +31,13 @@ namespace DishAndMovie.Services
 
             return mealPlanDtos;
         }
+
+
+        public async Task<int> CountMealPlans()
+        {
+            return await _context.MealPlans.CountAsync();
+        }
+
 
         public async Task<MealPlanDto?> FindMealPlan(int id)
         {

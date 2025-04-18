@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DishAndMovie.Models.IngredientDto>
+﻿@model DishAndMovie.Models.ViewModels.IngredientList
 
 <!DOCTYPE html>
 <html lang="en">
@@ -33,36 +33,36 @@
             margin-bottom: 20px;
         }
 
-        .navigation a {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #2980b9;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
+            .navigation a {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: #2980b9;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
 
-        .navigation a:hover {
-            background-color: #1c6391;
-        }
+                .navigation a:hover {
+                    background-color: #1c6391;
+                }
 
         .ingredient-table {
             width: 100%;
             margin: 20px auto;
         }
 
-        .ingredient-table th, .ingredient-table td {
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            text-align: left;
-        }
+            .ingredient-table th, .ingredient-table td {
+                padding: 12px 15px;
+                border: 2px solid #ddd;
+                text-align: left;
+            }
 
-        .ingredient-table th {
-            background-color: #34495e;
-            color: white;
-        }
+            .ingredient-table th {
+                background-color: #34495e;
+                color: white;
+            }
 
         .button {
             padding: 10px 15px;
@@ -76,18 +76,43 @@
             cursor: pointer;
         }
 
-        .button:hover {
-            background-color: #1c6391;
-            color: white;
+            .button:hover {
+                background-color: #1c6391;
+                color: white;
+            }
+
+            .button.delete {
+                background-color: #e74c3c;
+            }
+
+                .button.delete:hover {
+                    background-color: #c0392b;
+                }
+
+        .pagination {
+            text-align: center;
+            margin-top: 30px;
         }
 
-        .button.delete {
-            background-color: #e74c3c;
-        }
+            .pagination a, .pagination span {
+                display: inline-block;
+                margin: 0 5px;
+                padding: 8px 12px;
+                background-color: #2980b9;
+                color: white;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
 
-        .button.delete:hover {
-            background-color: #c0392b;
-        }
+                .pagination a:hover {
+                    background-color: #1c6391;
+                }
+
+            .pagination span {
+                background-color: #34495e;
+            }
     </style>
 </head>
 <body>
@@ -111,7 +136,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var ingredient in Model)
+                @foreach (var ingredient in Model.Ingredients)
                 {
                     <tr>
                         <td>@ingredient.IngredientId</td>
@@ -127,6 +152,24 @@
                 }
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        @if (Model.MaxPage > 0)
+        {
+            <div class="pagination">
+                @if (Model.Page > 0)
+                {
+                    <a href="/IngredientPage/List?PageNum=@(Model.Page - 1)">&laquo; Prev</a>
+                }
+
+                <span>Page @(Model.Page + 1) of @(Model.MaxPage + 1)</span>
+
+                @if (Model.Page < Model.MaxPage)
+                {
+                    <a href="/IngredientPage/List?PageNum=@(Model.Page + 1)">Next &raquo;</a>
+                }
+            </div>
+        }
     </div>
 
 </body>

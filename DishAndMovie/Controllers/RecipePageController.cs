@@ -1,5 +1,6 @@
 ﻿using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using DishAndMovie.Models.ViewModels;
 using DishAndMovie.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,12 +25,38 @@ namespace DishAndMovie.Controllers
             return RedirectToAction("List");
         }
 
+        // GET: RecipePage/List?PageNum={pagenum}
         // GET: RecipePage/List
-        public async Task<IActionResult> List()
+        [HttpGet]
+        public async Task<IActionResult> List(int PageNum = 0)
         {
-            IEnumerable<RecipeDto?> recipeDtos = await _recipeService.ListRecipes();
-            return View(recipeDtos);
+            int PerPage = 3;
+
+            // Get total recipe count from service
+            int totalCount = await _recipeService.CountRecipes();
+
+            int MaxPage = (int)Math.Ceiling((decimal)totalCount / PerPage) - 1;
+
+            // Ensure boundaries are respected
+            if (MaxPage < 0) MaxPage = 0;
+            if (PageNum < 0) PageNum = 0;
+            if (PageNum > MaxPage) PageNum = MaxPage;
+
+            int StartIndex = PageNum * PerPage;
+
+            // Fetch only paginated recipes
+            IEnumerable<RecipeDto?> recipeDtos = await _recipeService.ListRecipes(StartIndex, PerPage); // Make sure this overload exists
+
+            RecipeList viewModel = new RecipeList
+            {
+                Recipes = recipeDtos,
+                Page = PageNum,
+                MaxPage = MaxPage
+            };
+
+            return View(viewModel);
         }
+
 
         // GET: RecipePage/Details/{id}
         [HttpGet]

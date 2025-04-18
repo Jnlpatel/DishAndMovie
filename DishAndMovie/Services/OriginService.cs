@@ -14,10 +14,13 @@ namespace DishAndMovie.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<OriginDto>> ListOrigins()
+        public async Task<IEnumerable<OriginDto>> ListOrigins(int startIndex, int perPage)
         {
-            // Fetch origins from the database
-            List<Origin> origins = await _context.Origins.ToListAsync();
+            // Fetch paginated origins from the database
+            List<Origin> origins = await _context.Origins
+                                                  .Skip(startIndex)
+                                                  .Take(perPage)
+                                                  .ToListAsync();
 
             // Convert to OriginDto
             List<OriginDto> originDtos = origins.Select(o => new OriginDto()
@@ -28,6 +31,12 @@ namespace DishAndMovie.Services
 
             return originDtos;
         }
+
+        public async Task<int> CountOrigins()
+        {
+            return await _context.Origins.CountAsync();
+        }
+
 
         public async Task<OriginDto?> FindOrigin(int id)
         {

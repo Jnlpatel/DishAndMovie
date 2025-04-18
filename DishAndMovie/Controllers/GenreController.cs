@@ -17,22 +17,31 @@ namespace DishAndMovie.Controllers
         }
 
         /// <summary>
-        /// Returns a list of all genres.
+        /// Returns a list of Genres. Pageable with optional parameters skip and perpage.
         /// </summary>
-        /// <returns>A list of genre DTO objects.</returns>
+        /// <param name="skip">The number of records to skip, ordered by ID ascending.</param>
+        /// <param name="perpage">The number of records to get.</param>
+        /// <returns>
+        /// 200 OK
+        /// [{GenreDto}, {GenreDto}, ...]
+        /// </returns>
         /// <example>
-        /// GET /api/Genre/ListGenres
-        /// Response:
-        /// [
-        ///   { "GenreID": 1, "Name": "Action" },
-        ///   { "GenreID": 2, "Name": "Drama" }
-        /// ]
+        /// GET: api/Genres/ListGenres -> [{GenreDto}, {GenreDto}, ...]
+        /// GET: api/Genres/ListGenres?skip=0&perpage=10 -> [{GenreDto}, {GenreDto}, ... +8]
         /// </example>
         [HttpGet("ListGenres")]
-        public async Task<ActionResult<IEnumerable<GenreDto>>> ListGenres()
+        public async Task<ActionResult<IEnumerable<GenreDto>>> ListGenres(int? skip, int? perpage)
         {
-            var genres = await _genreService.ListGenres();
-            return Ok(genres);
+            // Default to skip = 0 if not provided
+            if (skip == null) skip = 0;
+
+            // Default to perpage = 10 if not provided
+            if (perpage == null) perpage = await _genreService.CountGenres();
+
+            // Get paginated genres
+            IEnumerable<GenreDto> genreDtos = await _genreService.ListGenres((int)skip, (int)perpage);
+
+            return Ok(genreDtos);
         }
 
         /// <summary>

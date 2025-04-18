@@ -17,23 +17,33 @@ namespace DishAndMovie.Controllers
         }
 
         /// <summary>
-        /// Returns a list of all origins.
+        /// Returns a list of Origins. Pageable with optional parameters skip and perpage.
         /// </summary>
-        /// <returns>A list of origin DTO objects.</returns>
+        /// <param name="skip">The number of records to skip, ordered by ID ascending.</param>
+        /// <param name="perpage">The number of records to get.</param>
+        /// <returns>
+        /// 200 OK
+        /// [{OriginDto}, {OriginDto}, ...]
+        /// </returns>
         /// <example>
-        /// GET /api/Origin/ListOrigins
-        /// Response:
-        /// [
-        ///   { "OriginId": 1, "OriginCountry": "Italy" },
-        ///   { "OriginId": 2, "OriginCountry": "Japan" }
-        /// ]
+        /// GET: api/Origins/ListOrigins -> [{OriginDto}, {OriginDto}, ...]
+        /// GET: api/Origins/ListOrigins?skip=0&perpage=10 -> [{OriginDto}, {OriginDto}, ... +8]
         /// </example>
         [HttpGet("ListOrigins")]
-        public async Task<ActionResult<IEnumerable<OriginDto>>> ListOrigins()
+        public async Task<ActionResult<IEnumerable<OriginDto>>> ListOrigins(int? skip, int? perpage)
         {
-            IEnumerable<OriginDto> originDtos = await _originService.ListOrigins();
+            // Default to skip = 0 if not provided
+            if (skip == null) skip = 0;
+
+            // Default to perpage = 10 if not provided
+            if (perpage == null) perpage = await _originService.CountOrigins();
+
+            // Get paginated origins
+            IEnumerable<OriginDto> originDtos = await _originService.ListOrigins((int)skip, (int)perpage);
+
             return Ok(originDtos);
         }
+
 
         /// <summary>
         /// Returns a single origin by ID.

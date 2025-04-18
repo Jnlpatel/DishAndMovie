@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DishAndMovie.Models.OriginDto>
+﻿@model DishAndMovie.Models.ViewModels.OriginList
 
 <!DOCTYPE html>
 <html lang="en">
@@ -33,36 +33,36 @@
             margin-bottom: 20px;
         }
 
-        .navigation a {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #2980b9;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
+            .navigation a {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: #2980b9;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
 
-        .navigation a:hover {
-            background-color: #1c6391;
-        }
+                .navigation a:hover {
+                    background-color: #1c6391;
+                }
 
         .origin-table {
             width: 100%;
             margin: 20px auto;
         }
 
-        .origin-table th, .origin-table td {
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            text-align: left;
-        }
+            .origin-table th, .origin-table td {
+                padding: 12px 15px;
+                border: 2px solid #ddd;
+                text-align: left;
+            }
 
-        .origin-table th {
-            background-color: #34495e;
-            color: white;
-        }
+            .origin-table th {
+                background-color: #34495e;
+                color: white;
+            }
 
         .button {
             padding: 10px 15px;
@@ -76,18 +76,18 @@
             cursor: pointer;
         }
 
-        .button:hover {
-            background-color: #1c6391;
-            color: white;
-        }
+            .button:hover {
+                background-color: #1c6391;
+                color: white;
+            }
 
-        .button.delete {
-            background-color: #e74c3c;
-        }
+            .button.delete {
+                background-color: #e74c3c;
+            }
 
-        .button.delete:hover {
-            background-color: #c0392b;
-        }
+                .button.delete:hover {
+                    background-color: #c0392b;
+                }
 
             .button.details {
                 background-color: #2980b9;
@@ -95,10 +95,6 @@
 
             .button.edit {
                 background-color: #27ae60;
-            }
-
-            .button.delete {
-                background-color: #e74c3c;
             }
 
             .button.movies {
@@ -109,16 +105,36 @@
                 background-color: #f39c12;
             }
 
-            .button:hover {
-                opacity: 0.9;
-            }
-
         .button-group {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
         }
 
+        .pagination {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+            .pagination a, .pagination span {
+                display: inline-block;
+                margin: 0 5px;
+                padding: 8px 12px;
+                background-color: #2980b9;
+                color: white;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+
+                .pagination a:hover {
+                    background-color: #1c6391;
+                }
+
+            .pagination span {
+                background-color: #34495e;
+            }
     </style>
 </head>
 <body>
@@ -140,7 +156,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var origin in Model)
+                @foreach (var origin in Model.Origins)
                 {
                     <tr>
                         <td>@origin.OriginId</td>
@@ -153,12 +169,26 @@
                                 <a class="button movies" href="/Origins/MoviesByOrigin/@origin.OriginId">View Movies</a>
                                 <a class="button recipes" href="/Origins/RecipesByOrigin/@origin.OriginId">View Recipes</a>
                             </div>
-                           
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            @if (Model.Page > 0)
+            {
+                <a href="/OriginPage/List?PageNum=@(Model.Page - 1)">&laquo; Prev</a>
+            }
+
+            <span>Page @(Model.Page + 1) of @(Model.MaxPage + 1)</span>
+
+            @if (Model.Page < Model.MaxPage)
+            {
+                <a href="/OriginPage/List?PageNum=@(Model.Page + 1)">Next &raquo;</a>
+            }
+        </div>
     </div>
 
 </body>

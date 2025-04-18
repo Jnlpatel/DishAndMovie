@@ -14,15 +14,25 @@ namespace DishAndMovie.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<GenreDto>> ListGenres()
+        public async Task<IEnumerable<GenreDto>> ListGenres(int skip, int perPage)
         {
             return await _context.Genres
+                .OrderBy(g => g.GenreID)
+                .Skip(skip)
+                .Take(perPage)
                 .Select(g => new GenreDto
                 {
                     GenreID = g.GenreID,
                     Name = g.Name
-                }).ToListAsync();
+                })
+                .ToListAsync();
         }
+
+        public async Task<int> CountGenres()
+        {
+            return await _context.Genres.CountAsync();
+        }
+
 
         public async Task<GenreDto?> FindGenre(int id)
         {

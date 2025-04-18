@@ -5,7 +5,7 @@ namespace DishAndMovie.Interfaces
     public interface IIngredientService
     {
         // Base CRUD operations
-        Task<IEnumerable<IngredientDto>> ListIngredients();
+        Task<IEnumerable<IngredientDto>> ListIngredients(int skip, int perpage);
 
         Task<IngredientDto?> FindIngredient(int id);
 
@@ -17,6 +17,6 @@ namespace DishAndMovie.Interfaces
 
         Task<IEnumerable<IngredientDto>> GetAllIngredientsAsync();
 
-
+        Task<int> CountIngredients();
     }
 }

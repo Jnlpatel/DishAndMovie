@@ -14,13 +14,15 @@ namespace DishAndMovie.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<IngredientDto>> ListIngredients()
+        public async Task<IEnumerable<IngredientDto>> ListIngredients(int skip, int perpage)
         {
-            // Fetch ingredients
-            List<Ingredient> ingredients = await _context.Ingredients.ToListAsync();
+            var ingredients = await _context.Ingredients
+                .OrderBy(i => i.IngredientId)
+                .Skip(skip)
+                .Take(perpage)
+                .ToListAsync();
 
-            // Convert to IngredientDto
-            List<IngredientDto> ingredientDtos = ingredients.Select(i => new IngredientDto()
+            var ingredientDtos = ingredients.Select(i => new IngredientDto
             {
                 IngredientId = i.IngredientId,
                 Name = i.Name,
@@ -30,6 +32,12 @@ namespace DishAndMovie.Services
 
             return ingredientDtos;
         }
+
+        public async Task<int> CountIngredients()
+        {
+            return await _context.Ingredients.CountAsync();
+        }
+
 
         public async Task<IngredientDto?> FindIngredient(int id)
         {

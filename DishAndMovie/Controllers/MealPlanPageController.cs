@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using DishAndMovie.Data.Migrations;
 using DishAndMovie.Interfaces;
 using DishAndMovie.Models;
+using DishAndMovie.Models.ViewModels;
 
 namespace DishAndMovie.Controllers
 {
@@ -23,12 +24,32 @@ namespace DishAndMovie.Controllers
         }
 
 
-        // GET: MealPlanPage/List
-        public async Task<IActionResult> List()
+        // GET: MealPlanPage/List?pageNum={pageNum}
+        [HttpGet]
+        public async Task<IActionResult> List(int pageNum = 0)
         {
-            IEnumerable<MealPlanDto?> mealPlanDtos = await _mealPlanService.ListMealPlans();
-            return View(mealPlanDtos);
+            int perPage = 3;
+            int maxPage = (int)Math.Ceiling((decimal)await _mealPlanService.CountMealPlans() / perPage) - 1;
+
+            // Ensure pageNum stays within valid range
+            if (maxPage < 0) maxPage = 0;
+            if (pageNum < 0) pageNum = 0;
+            if (pageNum > maxPage) pageNum = maxPage;
+
+            int startIndex = perPage * pageNum;
+
+            IEnumerable<MealPlanDto> mealPlanDtos = await _mealPlanService.ListMealPlans(startIndex, perPage);
+
+            MealPlanList viewModel = new MealPlanList
+            {
+                MealPlans = mealPlanDtos,
+                MaxPage = maxPage,
+                Page = pageNum
+            };
+
+            return View(viewModel);
         }
+
 
 
         // GET: MealPlanPage/Details/{id}

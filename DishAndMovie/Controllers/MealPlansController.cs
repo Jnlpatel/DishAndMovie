@@ -22,25 +22,29 @@ namespace DishAndMovie.Controllers
 
 
         /// <summary>
-        /// Returns a list of Meal Plans
+        /// Returns a list of Meal Plans. Pageable with optional parameters skip and perpage.
         /// </summary>
-        /// <returns>A list of MealPlanDto objects</returns>
+        /// <param name="skip">The number of records to skip, ordered by ID ascending</param>
+        /// <param name="perpage">The number of records to return</param>
+        /// <returns>
+        /// 200 OK
+        /// [ { MealPlanDto }, { MealPlanDto }, ... ]
+        /// </returns>
         /// <example>
         /// GET: api/MealPlans/ListMealPlans
-        /// [
-        ///   {"MealPlanId":1,"Name":"Weight Loss Plan","Date":"2025-02-01"},
-        ///   {"MealPlanId":2,"Name":"High Protein Plan","Date":"2025-02-05"}
-        /// ]
+        /// GET: api/MealPlans/ListMealPlans?skip=0&perpage=10
         /// </example>
-        [HttpGet(template: "ListMealPlans")]
-        public async Task<ActionResult<IEnumerable<MealPlanDto>>> ListMealPlans()
+        [HttpGet("ListMealPlans")]
+        public async Task<ActionResult<IEnumerable<MealPlanDto>>> ListMealPlans(int? skip, int? perpage)
         {
-            // Get the list of meal plans from the service
-            IEnumerable<MealPlanDto> mealPlanDtos = await _mealPlanService.ListMealPlans();
+            if (skip == null) skip = 0;
+            if (perpage == null) perpage = await _mealPlanService.CountMealPlans();
 
-            // Return 200 OK with the list of meal plans
+            IEnumerable<MealPlanDto> mealPlanDtos = await _mealPlanService.ListMealPlans((int)skip, (int)perpage);
+
             return Ok(mealPlanDtos);
         }
+
 
 
         /// <summary>
