@@ -1,0 +1,129 @@
+﻿@model string
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Weather Forecast";
+    var error = ViewBag.Error as string;
+
+    // List of popular cities - properly initialized
+    List<string> cities = new List<string>
+    {
+        "New York", "London", "Paris", "Tokyo", "Dubai",
+        "Sydney", "Berlin", "Mumbai", "Singapore", "Toronto",
+        "Chicago", "Los Angeles", "Hong Kong", "Bangkok", "Seoul"
+    };
+
+    // Get the current city from ViewBag or use empty string
+    string currentCity = ViewBag.City != null ? ViewBag.City.ToString() : "";
+}
+
+<div class="weather-container">
+    <!-- Dropdown Search Box -->
+    <div class="search-box">
+        <form method="get" class="weather-form">
+            <div class="select-wrapper">
+                <select name="city" class="city-dropdown" required>
+                    <option value="">-- Select a City --</option>
+                    @foreach (var city in cities)
+                    {
+                        <option value="@city" selected="@(city == currentCity)">@city</option>
+                    }
+                </select>
+                <div class="select-arrow">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i> Get Weather
+            </button>
+        </form>
+    </div>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="error-card">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>@error</p>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(Model))
+    {
+        try
+        {
+            var weather = JsonDocument.Parse(Model).RootElement;
+
+            <!-- Current Weather Card -->
+            <div class="current-weather-card">
+                <div class="location">
+                    <h2><i class="fas fa-map-marker-alt"></i> @currentCity</h2>
+                    <p class="description">@weather.GetProperty("description").GetString()</p>
+                </div>
+
+                <div class="weather-main">
+                    <div class="temperature">
+                        @weather.GetProperty("temperature").GetString()
+                    </div>
+                    <div class="details">
+                        <p><i class="fas fa-wind"></i> @weather.GetProperty("wind").GetString()</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forecast Cards -->
+            <h3 class="forecast-title">3-Day Forecast</h3>
+            <div class="forecast-container">
+                @foreach (var day in weather.GetProperty("forecast").EnumerateArray())
+                {
+                    <div class="forecast-card">
+                        <h4>Day @day.GetProperty("day").GetString()</h4>
+                        <div class="forecast-temp">
+                            @day.GetProperty("temperature").GetString()
+                        </div>
+                        <div class="forecast-wind">
+                            <i class="fas fa-wind"></i> @day.GetProperty("wind").GetString()
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        catch (Exception ex)
+        {
+            <div class="error-card">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error displaying weather data: @ex.Message</p>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    /* Your existing CSS styles here */
+    .select-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .city-dropdown {
+        width: 100%;
+        padding: 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        font-size: 16px;
+        appearance: none;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    /* ... rest of your CSS ... */
+</style>
+
+@section Scripts {
+    <script>
+        // Optional: Auto-submit when city is selected
+        document.querySelector('.city-dropdown').addEventListener('change', function () {
+            if (this.value) {
+                this.form.submit();
+            }
+        });
+    </script>
+}
