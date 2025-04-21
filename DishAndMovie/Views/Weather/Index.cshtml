@@ -5,122 +5,205 @@
     ViewData["Title"] = "Weather Forecast";
     var error = ViewBag.Error as string;
 
-    // List of popular cities - properly initialized
     List<string> cities = new List<string>
     {
-        "New York", "London", "Paris", "Tokyo", "Dubai",
-        "Sydney", "Berlin", "Mumbai", "Singapore", "Toronto",
-        "Chicago", "Los Angeles", "Hong Kong", "Bangkok", "Seoul"
+        "New York", "Brampton", "Paris", "Tokyo", "Dubai",
+        "Sydney", "Vaughn", "Mumbai", "Singapore", "Toronto",
+        "Ottawa", "Ajax", "Hong Kong", "Bangkok", "Seoul"
     };
 
-    // Get the current city from ViewBag or use empty string
     string currentCity = ViewBag.City != null ? ViewBag.City.ToString() : "";
 }
 
-<div class="weather-container">
-    <!-- Dropdown Search Box -->
-    <div class="search-box">
-        <form method="get" class="weather-form">
-            <div class="select-wrapper">
-                <select name="city" class="city-dropdown" required>
-                    <option value="">-- Select a City --</option>
+<div class="weather-app">
+    <!-- Search Section with Custom Dropdown -->
+    <div class="search-header">
+        <h1>☁️ Weather Forecast</h1>
+        <form method="get" class="search-form">
+            <div class="custom-select">
+                <select name="city" required>
+                    <option value="">Select a city...</option>
                     @foreach (var city in cities)
                     {
                         <option value="@city" selected="@(city == currentCity)">@city</option>
                     }
                 </select>
-                <div class="select-arrow">
-                    <i class="fas fa-chevron-down"></i>
-                </div>
+                <span class="dropdown-arrow"></span>
             </div>
-            <button type="submit" class="search-btn">
-                <i class="fas fa-search"></i> Get Weather
-            </button>
+            <button type="submit">Get Weather</button>
         </form>
     </div>
 
-    @if (!string.IsNullOrEmpty(error))
-    {
-        <div class="error-card">
-            <i class="fas fa-exclamation-triangle"></i>
-            <p>@error</p>
-        </div>
-    }
-    else if (!string.IsNullOrEmpty(Model))
-    {
-        try
+    <!-- Weather Display -->
+    <div class="weather-display">
+        @if (!string.IsNullOrEmpty(error))
         {
-            var weather = JsonDocument.Parse(Model).RootElement;
+            <div class="error-message">⚠️ @error</div>
+        }
+        else if (!string.IsNullOrEmpty(Model))
+        {
+            try
+            {
+                var weather = JsonDocument.Parse(Model).RootElement;
 
-            <!-- Current Weather Card -->
-            <div class="current-weather-card">
-                <div class="location">
-                    <h2><i class="fas fa-map-marker-alt"></i> @currentCity</h2>
+                <div class="current-weather">
+                    <h2>📍 @currentCity</h2>
                     <p class="description">@weather.GetProperty("description").GetString()</p>
+
+                    <div class="weather-data">
+                        <div class="temp">@weather.GetProperty("temperature").GetString()</div>
+                        <div class="wind">🌬️ @weather.GetProperty("wind").GetString()</div>
+                    </div>
                 </div>
 
-                <div class="weather-main">
-                    <div class="temperature">
-                        @weather.GetProperty("temperature").GetString()
-                    </div>
-                    <div class="details">
-                        <p><i class="fas fa-wind"></i> @weather.GetProperty("wind").GetString()</p>
+                <div class="forecast">
+                    <h3>📅 3-Day Forecast</h3>
+                    <div class="forecast-grid">
+                        @foreach (var day in weather.GetProperty("forecast").EnumerateArray())
+                        {
+                            <div class="day-card">
+                                <h4>Day @day.GetProperty("day").GetString()</h4>
+                                <div class="day-temp">@day.GetProperty("temperature").GetString()</div>
+                                <div class="day-wind">🌬️ @day.GetProperty("wind").GetString()</div>
+                            </div>
+                        }
                     </div>
                 </div>
-            </div>
-
-            <!-- Forecast Cards -->
-            <h3 class="forecast-title">3-Day Forecast</h3>
-            <div class="forecast-container">
-                @foreach (var day in weather.GetProperty("forecast").EnumerateArray())
-                {
-                    <div class="forecast-card">
-                        <h4>Day @day.GetProperty("day").GetString()</h4>
-                        <div class="forecast-temp">
-                            @day.GetProperty("temperature").GetString()
-                        </div>
-                        <div class="forecast-wind">
-                            <i class="fas fa-wind"></i> @day.GetProperty("wind").GetString()
-                        </div>
-                    </div>
-                }
-            </div>
+            }
+            catch
+            {
+                <div class="error-message">⚠️ Error displaying weather data</div>
+            }
         }
-        catch (Exception ex)
+        else
         {
-            <div class="error-card">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Error displaying weather data: @ex.Message</p>
+            <div class="welcome-message">
+                <div class="weather-icon">☁️</div>
+                <p>Select a city to view weather</p>
             </div>
         }
-    }
+    </div>
 </div>
 
 <style>
-    /* Your existing CSS styles here */
-    .select-wrapper {
+    /* Modern Dropdown with Custom Indicator */
+    .custom-select {
         position: relative;
         width: 100%;
+        max-width: 400px;
+        margin: 0 auto 20px;
     }
 
-    .city-dropdown {
-        width: 100%;
-        padding: 12px 20px;
-        border: 2px solid #e0e0e0;
-        border-radius: 30px;
+        .custom-select select {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            appearance: none;
+            background-color: white;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+            .custom-select select:focus {
+                outline: none;
+                border-color: #4a90e2;
+                box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+            }
+
+    .dropdown-arrow {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid #666;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+    .custom-select select:focus + .dropdown-arrow {
+        border-top-color: #4a90e2;
+        transform: translateY(-50%) rotate(180deg);
+    }
+
+    /* Search Button */
+    .search-form button {
+        padding: 12px 24px;
+        background: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 8px;
         font-size: 16px;
-        appearance: none;
-        background-color: white;
         cursor: pointer;
+        transition: all 0.3s ease;
     }
 
-    /* ... rest of your CSS ... */
+        .search-form button:hover {
+            background: #3a7bc8;
+            transform: translateY(-2px);
+        }
+
+    /* Weather App Container */
+    .weather-app {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .search-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    /* Current Weather Styling */
+    .current-weather {
+        background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(58, 123, 200, 0.1));
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    /* Forecast Grid */
+    .forecast-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+    }
+
+    .day-card {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+    }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 600px) {
+        .forecast-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 @section Scripts {
     <script>
-        // Optional: Auto-submit when city is selected
-        document.querySelector('.city-dropdown').addEventListener('change', function () {
+        // Auto-submit when city is selected
+        document.querySelector('.custom-select select').addEventListener('change', function () {
             if (this.value) {
                 this.form.submit();
             }
